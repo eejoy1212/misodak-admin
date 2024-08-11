@@ -1,0 +1,86 @@
+.dashboard-container {
+    width: 100vw;
+    height: 100vh;
+    min-width: 1620px;
+    min-height: 900px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F3F5F6;
+}
+
+.dashboard {
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.sidebar {
+    width: 200px;
+    height: 100%;
+    border-radius: 20px;
+    background-color: white;
+}
+.sidebar-top{
+    width: calc(100% - 40px);
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+}
+.menus{
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.menu{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-indent: 8px;
+    height: 50px;
+}
+.indicator{
+width: 5px;
+height: 100%;
+background-color:#14AC2B;
+
+}
+.opacity{
+    opacity: 0;
+}
+.select{
+    background-color: #DEF6D0;
+}
+.sub-menu{
+    cursor: pointer;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-left: 1px solid #d9d9d9;
+    text-indent: 20px;
+}
+.select-sub-menu{
+    cursor: pointer;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-left: 1px solid #14AC2B;
+    text-indent: 20px;
+ font-weight: 600;
+    color: black;}

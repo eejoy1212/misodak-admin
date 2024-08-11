@@ -1,0 +1,16 @@
+
+.main-card-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+.circle{
+    display: flex;
+align-items: center;
+justify-content: center;
+    width: 45px;
+    height: 45px;
+  border-radius: 50%;
+    
+}
