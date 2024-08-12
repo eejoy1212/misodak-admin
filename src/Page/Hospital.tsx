@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, MenuItem, Select, Switch, Typography, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button } from '@mui/material';
+import { Card, CardContent, MenuItem, Select, Switch, Typography, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, IconButton, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { getDepHospital, getHospital, searchHospital } from '../api/hospital';
-
+import { FaPencilAlt } from "react-icons/fa";
 // 병원 데이터 타입 정의
 interface Hospital {
   dutyName: string;
@@ -95,6 +95,24 @@ export function Hospital(props: HospitalProps) {
   const [selectedDepartment, setSelectedDepartment] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
+
+  const handleEditClick = (hospital: Hospital) => {
+    setEditingHospital(hospital);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setEditingHospital(null);
+  };
+
+  const handleSave = () => {
+    // 여기에 병원 정보를 수정하고 서버에 업데이트하는 로직을 추가합니다.
+    console.log('수정된 병원 정보:', editingHospital);
+    handleCloseDialog();
+  };
 
   function parseAddress(address: string): { city: string, region: string } | null {
     const cityEndIndex = address.search(/(시|도)/) + 1;
@@ -243,7 +261,9 @@ export function Hospital(props: HospitalProps) {
                     <TableCell sx={{ color: headerTxtColor }} align="center">{hospital.tags ? hospital.tags.join(', ') : "-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{"-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{"-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">수정</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
+                    onClick={() => handleEditClick(hospital)}
+                    ><FaPencilAlt/></IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">비활성</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">삭제</TableCell>
                   </TableRow>
@@ -260,6 +280,44 @@ export function Hospital(props: HospitalProps) {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />}
+           {/* 수정 다이얼로그 */}
+           <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle>병원 정보 수정</DialogTitle>
+            <DialogContent>
+              <TextField
+                margin="dense"
+                label="병원명"
+                fullWidth
+                value={editingHospital?.dutyName || ''}
+                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyName: e.target.value })}
+              />
+              <TextField
+                margin="dense"
+                label="주소"
+                fullWidth
+                value={editingHospital?.dutyAddr || ''}
+                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyAddr: e.target.value })}
+              />
+              <TextField
+                margin="dense"
+                label="진료과"
+                fullWidth
+                value={editingHospital?.dutyDivNam || ''}
+                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyDivNam: e.target.value })}
+              />
+              <TextField
+                margin="dense"
+                label="태그"
+                fullWidth
+                value={editingHospital?.tags ?editingHospital?.tags.join(', ') : ''}
+                onChange={(e) => setEditingHospital({ ...editingHospital!, tags: e.target.value.split(',').map(tag => tag.trim()) })}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="primary">취소</Button>
+              <Button onClick={handleSave} color="primary">저장</Button>
+            </DialogActions>
+          </Dialog>
         </CardContent>
       </Card>
     </div>

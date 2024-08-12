@@ -7,6 +7,7 @@ import { DashboardLayout } from './Layout/DashboardLayout';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Main } from './Page/Main';
 import { Hospital } from './Page/Hospital';
+import { HospitalRegister } from './Page/HospitalRegister';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -28,6 +29,11 @@ const router = createBrowserRouter(
       
   path: "/hospital",
   element: <Hospital/>
+},
+{
+      
+  path: "/hospital-register",
+  element: <HospitalRegister/>
 },
 
 ]

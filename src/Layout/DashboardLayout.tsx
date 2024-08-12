@@ -73,30 +73,36 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                             }}
                         >Notification</strong>
                     </li>
-                    <li className={`menu ${getSelected("/hospital") ? "select" : ""}`}
+                    <li className={`menu ${location.pathname.includes("hospital") ? "select" : ""}`}
                     onClick={()=>{
                         navigate("/hospital")
                     }}
                     >    <div
-                        className={`indicator ${getSelected("/hospital") ? "" : "opacity"}`}
+                        className={`indicator ${location.pathname.includes("hospital") ? "" : "opacity"}`}
                     />
                         <MdOutlineEventNote
                             size={"20px"}
-                            color={`${getSelected("/hospital") ? "#14AC2B" : "#999999"}`}
+                            color={`${location.pathname.includes("hospital") ? "#14AC2B" : "#999999"}`}
                             style={iconStyle}
                         />
                         <strong
                             style={{
-                                color: `${getSelected("/hospital") ? "#14AC2B" : "#999999"}`
+                                color: `${location.pathname.includes("hospital") ? "#14AC2B" : "#999999"}`
                             }}
                         >병원관리</strong>
                     </li>
                     <ul>
                     <li
+                    onClick={()=>{
+                        navigate("/hospital")
+                    }}
                     className={`${location.pathname==="/hospital"?"select-sub-menu":"sub-menu"}`}
                     >정보 조회</li>
                     <li
                     className={`${location.pathname==="/hospital-register"?"select-sub-menu":"sub-menu"}`}
+                    onClick={()=>{
+                        navigate("/hospital-register")
+                    }}
                     >정보 등록</li>
                     <li
                     className={`${location.pathname==="/hospital-edit"?"select-sub-menu":"sub-menu"}`}

@@ -1,0 +1,83 @@
+
+.hospital-register-container{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.info-title{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.info-contents{
+    width: 100%;
+    display: flex;
+    gap: 40px;
+}
+.left-area{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+.right-area{
+    width: 50%;
+    background-color: red;
+}
+.title-box{
+    width: 150px;
+    padding-top: 20px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #d9d9d9;
+    background-color: #FBFFF9;
+    
+}
+.first-title{
+  padding-top: 8px;
+}
+.content-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    border-bottom: 1px solid #d9d9d9;
+    
+}
+.photo-container,
+.form-container
+{ 
+
+    margin-top: 20px;
+    width: calc(100% - 40px - 40px);
+    display: flex;
+
+}
+.photo-container{
+    margin-bottom: 8px;
+    border-radius: 5px;
+    height: 100px;
+    background-color: #d9d9d9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form-container{
+    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.info-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.first-container{
+    margin-top: 8px;
+}
