@@ -21,11 +21,15 @@ const menuTitleSx = {
 
 const iconStyle = { marginLeft: "10px" }
 export function DashboardLayout(props: DashboardLayoutProps) {
+    const [openInfoTab,setOpenInfoTab]=React.useState(false)
     const location = useLocation()
     const navigate=useNavigate()
     const getSelected = (path: string) => {
         const isSelect = location.pathname === path
         return isSelect
+    }
+    const onClickInfoTab=()=>{
+        setOpenInfoTab(p=>!p)
     }
     return (
         <div className="dashboard-container">
@@ -73,25 +77,23 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                             }}
                         >Notification</strong>
                     </li>
-                    <li className={`menu ${location.pathname.includes("hospital") ? "select" : ""}`}
-                    onClick={()=>{
-                        navigate("/hospital")
-                    }}
+                    <li className={`menu ${openInfoTab ? "select" : ""}`}
+                    onClick={onClickInfoTab}
                     >    <div
-                        className={`indicator ${location.pathname.includes("hospital") ? "" : "opacity"}`}
+                        className={`indicator ${openInfoTab ? "" : "opacity"}`}
                     />
                         <MdOutlineEventNote
                             size={"20px"}
-                            color={`${location.pathname.includes("hospital") ? "#14AC2B" : "#999999"}`}
+                            color={`${openInfoTab ? "#14AC2B" : "#999999"}`}
                             style={iconStyle}
                         />
                         <strong
                             style={{
-                                color: `${location.pathname.includes("hospital") ? "#14AC2B" : "#999999"}`
+                                color: `${openInfoTab ? "#14AC2B" : "#999999"}`
                             }}
                         >병원관리</strong>
                     </li>
-                    <ul>
+                 {openInfoTab&&   <ul>
                     <li
                     onClick={()=>{
                         navigate("/hospital")
@@ -104,10 +106,10 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                         navigate("/hospital-register")
                     }}
                     >정보 등록</li>
-                    <li
+                    {/* <li
                     className={`${location.pathname==="/hospital-edit"?"select-sub-menu":"sub-menu"}`}
-                    >정보 수정</li>
-                    </ul>
+                    >정보 수정</li> */}
+                    </ul>}
                     <li className="menu">    <div
                           className={`indicator ${getSelected("/event") ? "" : "opacity"}`}
                     />

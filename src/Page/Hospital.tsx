@@ -32,7 +32,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
-import { parseAddress } from '../const/const';
+import { departmentOptions, parseAddress } from '../const/const';
 
 // 병원 데이터 타입 정의
 interface Hospital {
@@ -55,19 +55,6 @@ interface Hospital {
 export interface HospitalProps { }
 export interface SwitchProps { }
 
-const departmentOptions = [
-  { value: 'ALL', label: '전체' },
-  { value: 'CLINIC', label: '의원' },
-  { value: 'DENTAL', label: '치과의원' },
-  { value: 'ORIENTAL', label: '한의원' },
-  { value: 'NURSING', label: '요양병원' },
-  { value: 'PUBLIC', label: '보건소' },
-  { value: 'GENERAL', label: '종합병원' },
-  { value: 'HOSPITAL', label: '병원' },
-  { value: 'TRADITIONAL', label: '한방병원' },
-  { value: 'OTHER', label: '기타' },
-  { value: 'OTHER_AMBULANCE', label: '기타(구급차)' },
-];
 
 const IOSSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />

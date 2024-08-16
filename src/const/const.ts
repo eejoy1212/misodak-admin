@@ -72,6 +72,19 @@ export const cityRegionData:CityRegionData = {
       '서귀포시', '제주시'
     ]
   };
+  export const departmentOptions = [
+    { value: 'ALL', label: '전체' },
+    { value: 'CLINIC', label: '의원' },
+    { value: 'DENTAL', label: '치과의원' },
+    { value: 'ORIENTAL', label: '한의원' },
+    { value: 'NURSING', label: '요양병원' },
+    { value: 'PUBLIC', label: '보건소' },
+    { value: 'GENERAL', label: '종합병원' },
+    { value: 'HOSPITAL', label: '병원' },
+    { value: 'TRADITIONAL', label: '한방병원' },
+    { value: 'OTHER', label: '기타' },
+    { value: 'OTHER_AMBULANCE', label: '기타(구급차)' },
+  ];
   
  export function parseAddress(address: string): { city: string, region: string } | null {
     const cityEndIndex = address.search(/(시|도)/) + 1;

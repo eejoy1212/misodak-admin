@@ -67,6 +67,27 @@ export const putEditHospital = async (id: number,dutyName:string,city:string,loc
   
   return data;
 };
+// 병원을 등록하는 함수
+export const postRegisterHospital = async (dutyName:string, city:string, location:string, dutyAddr:string, dutyDivNam:string, tags:string, dutyInf:string, rnum:string) => {
+  console.log("register", dutyName, city, location, dutyAddr, dutyDivNam, tags, dutyInf);
+
+  try {
+    const { data } = await axiosInstance.post('/v1/admin/hospital', {
+      dutyName,
+      city,
+      location,
+      dutyAddr,
+      dutyDivNam,
+      tags,
+      dutyInf,
+      rnum,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error registering hospital:", error);
+    throw error;
+  }
+};
 // 병원을 삭제하는 함수
 export const deleteHospital = async (id: number) => {
   const { data } = await axiosInstance.delete(`/v1/admin/hospital/${id}`);
