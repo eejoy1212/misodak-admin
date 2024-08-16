@@ -29,7 +29,7 @@ import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-import { GiNightSleep } from "react-icons/gi";
+import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { parseAddress } from '../const/const';
@@ -49,6 +49,7 @@ interface Hospital {
   likes: number;
   rnum: string;
   dutyInf: string;
+  activated:boolean;
 }
 
 export interface HospitalProps { }
@@ -209,12 +210,15 @@ export function Hospital(props: HospitalProps) {
       .catch(error => console.error("페이지 크기 변경 오류:", error));
   };
 
-  const handleInActivate = async (id: number) => {
-    const res = window.confirm("비활성 하시겠습니까?");
+  const handleInActivate = async (id: number,nowActivate:boolean) => {
+    console.log("active>>>",nowActivate)
+    const res = window.confirm(`${nowActivate===true?"비활성":"활성"} 하시겠습니까?`);
     if (res) {
       await putActivateHospital(id);
       fetchHospital();
-    }
+       window.location.reload() 
+      }
+
   };
 
   const handleDelete = async (id: number, hospitalName: string) => {
@@ -257,7 +261,7 @@ export function Hospital(props: HospitalProps) {
       return prev;
     });
   };
-
+console.log(hospitals)
   return (
     <div className="hospital-container">
       <Typography fontSize={"18px"}>병원정보 - 조회</Typography>
@@ -305,7 +309,7 @@ export function Hospital(props: HospitalProps) {
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">등록이벤트</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">좋아요 수</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">비활성</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
               </TableHead>
@@ -323,8 +327,13 @@ export function Hospital(props: HospitalProps) {
                       onClick={() => handleEditClick(hospital)}
                     ><FaPencilAlt /></IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => handleInActivate(hospital.id)}
-                    ><GiNightSleep /></IconButton></TableCell>
+                      onClick={() => handleInActivate(hospital.id,hospital.activated)}
+                    >
+                    {hospital.activated===true?  <GiNightSleep />:
+                    <GiSun
+                    color='#14AC2B'
+                    />}
+                    </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
                         onClick={() => handleDelete(hospital.id, hospital.dutyName)}

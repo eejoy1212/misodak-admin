@@ -37,7 +37,7 @@ export const searchHospitals = async (keyword: string, pageable: { page: number;
   return data;
 };
 
-// 병원을 활성화하는 함수
+// 병원을 활성/비활성화하는 함수
 export const putActivateHospital = async (id: number) => {
   const { data } = await axiosInstance.put(`/v1/admin/hospital/activate/${id}`);
   
