@@ -1,30 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, MenuItem, Select, Switch, Typography, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, IconButton, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  MenuItem,
+  Select,
+  Switch,
+  Typography,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+  Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Chip,
+  Box
+} from '@mui/material';
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
-import { getDepHospital, getHospital, searchHospital } from '../api/hospital';
-import { FaPencilAlt } from "react-icons/fa";
+import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { GiNightSleep } from "react-icons/gi";
+import { searchHospitals } from '../api/hospital';
+import DaumPostcode from 'react-daum-postcode';
+import { parseAddress } from '../const/const';
+
 // 병원 데이터 타입 정의
 interface Hospital {
+  id: number;
   dutyName: string;
   dutyDivNam: string;
   dutyAddr: string;
   city: string;
   region: string;
   department: string;
-  tags: string[];
+  location: string;
+  tags: string; // tags is now a string
   event: string;
   likes: number;
+  rnum: string;
+  dutyInf: string;
 }
 
-export interface HospitalProps {}
-export interface SwitchProps {}
+export interface HospitalProps { }
+export interface SwitchProps { }
 
-// 진료과 목록
 const departmentOptions = [
-    { value: 'ALL', label: '전체' },
-    { value: 'CLINIC', label: '의원' },
-    { value: 'DENTAL', label: '치과의원' },
+  { value: 'ALL', label: '전체' },
+  { value: 'CLINIC', label: '의원' },
+  { value: 'DENTAL', label: '치과의원' },
   { value: 'ORIENTAL', label: '한의원' },
   { value: 'NURSING', label: '요양병원' },
   { value: 'PUBLIC', label: '보건소' },
@@ -89,14 +122,15 @@ const IOSSwitch = styled((props: SwitchProps) => (
 export function Hospital(props: HospitalProps) {
   const headerColor = "#F0FBEB";
   const headerTxtColor = "#333333";
-  const [hospitals, setHospitals] = useState<Hospital[]>([]); // Hospital 타입 사용
-  const [page, setPage] = useState(1);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedDepartment, setSelectedDepartment] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
+  const [openPostcode, setOpenPostcode] = useState(false);
 
   const handleEditClick = (hospital: Hospital) => {
     setEditingHospital(hospital);
@@ -106,29 +140,91 @@ export function Hospital(props: HospitalProps) {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingHospital(null);
+    window.location.reload();
   };
 
-  const handleSave = () => {
-    // 여기에 병원 정보를 수정하고 서버에 업데이트하는 로직을 추가합니다.
-    console.log('수정된 병원 정보:', editingHospital);
+  const handleSave = async () => {
+    if (editingHospital) {
+      await putEditHospital(
+        editingHospital.id, 
+        editingHospital?.dutyName, 
+        editingHospital?.city, 
+        editingHospital?.location, 
+        editingHospital?.dutyAddr, 
+        "CLINIC", 
+        editingHospital.tags, 
+        editingHospital?.dutyInf
+      );
+    }
     handleCloseDialog();
   };
 
-  function parseAddress(address: string): { city: string, region: string } | null {
-    const cityEndIndex = address.search(/(시|도)/) + 1;
-  
-    if (cityEndIndex > 0) {
-      const city = address.slice(0, cityEndIndex).trim();
-      const regionMatch = address.slice(cityEndIndex).trim().match(/\S+(구|시|군)/);
-  
-      if (regionMatch) {
-        const region = regionMatch[0];
-        return { city, region };
-      }
+  const handleCompletePostcode = (data: any) => {
+    setEditingHospital({
+      ...editingHospital!,
+      dutyAddr: data.address,
+    });
+    setOpenPostcode(false);
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
     }
-    return null;
-  }
-  
+
+    const timeout = setTimeout(async () => {
+      await searchHospitals(value, { page: 1, size: rowsPerPage, sort: 'dutyName' })
+        .then(res => setHospitals(res))
+        .catch(error => console.error("병원 검색 오류:", error));
+    }, 1000);
+
+    setSearchTimeout(timeout);
+  };
+
+  const fetchHospital = async () => {
+    const res = await getHospital();
+    setHospitals(res.content);
+  };
+
+  useEffect(() => {
+    fetchHospital();
+  }, []);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+    searchHospitals(searchTerm, { page: newPage, size: rowsPerPage, sort: 'dutyName' })
+      .then(res => setHospitals(res.content))
+      .catch(error => console.error("페이지 변경 오류:", error));
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSize = parseInt(event.target.value, 10);
+    setRowsPerPage(newSize);
+    setPage(0);
+    searchHospitals(searchTerm, { page: 0, size: newSize, sort: 'dutyName' })
+      .then(res => setHospitals(res.content))
+      .catch(error => console.error("페이지 크기 변경 오류:", error));
+  };
+
+  const handleInActivate = async (id: number) => {
+    const res = window.confirm("비활성 하시겠습니까?");
+    if (res) {
+      await putActivateHospital(id);
+      fetchHospital();
+    }
+  };
+
+  const handleDelete = async (id: number, hospitalName: string) => {
+    const res = window.confirm(`${hospitalName}을 삭제 하시겠습니까?`);
+    if (res) {
+      await deleteHospital(id);
+      fetchHospital();
+    }
+  };
+
   const fetchDepHospital = async (category: string) => {
     const res = await getDepHospital(category);
     setHospitals(res.content);
@@ -144,65 +240,34 @@ export function Hospital(props: HospitalProps) {
     setSelectedDepartment(e.target.value);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+  // 태그 삭제 핸들러
+  const handleDeleteTag = (tagToDelete: string) => {
+    const updatedTags = editingHospital?.tags
+      .split(',')
+      .filter(tag => tag.trim() !== tagToDelete)
+      .join(', ');
 
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
-
-    const timeout = setTimeout(() => {
-      searchHospitals(value);
-    }, 1000);
-
-    setSearchTimeout(timeout);
-  };
-
-  const searchHospitals = async (keyword: string) => {
-    if (keyword.trim()==="") {
-        fetchHospital()
-    } else {
-          const res = await searchHospital(keyword, page, rowsPerPage);
-    setHospitals(res.content);
-    }
-  
-  };
-
-  const fetchHospital = async () => {
-    const res = await getHospital();
-    setHospitals(res.content);
-    console.log("병원 데이터>>>", res.content);
-  };
-
-  useEffect(() => {
-    fetchHospital();
-  }, []);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // 페이지 변경 시 첫 페이지로 초기화
+    setEditingHospital((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          tags: updatedTags || '',
+        };
+      }
+      return prev;
+    });
   };
 
   return (
     <div className="hospital-container">
-        
       <Typography fontSize={"18px"}>병원정보 - 조회</Typography>
-      <Card variant="outlined"
-        sx={{
-          height: "100%"
-        }}
-      >
+      <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
           sx={{
             display: "flex",
             flexDirection: "column",
             gap: "20px",
-            paddingBottom: "0px", // 패딩을 줄여서 페이지네이션이 보이도록 함
+            paddingBottom: "0px",
           }}
         >
           <MainSearchBar placeholder='병원명,도시,지역' onSearch={handleSearch} />
@@ -212,10 +277,7 @@ export function Hospital(props: HospitalProps) {
               value={selectedDepartment}
               onChange={onChangeDep}
               displayEmpty
-              sx={{
-                height: "36px",
-                width: "200px",
-              }}
+              sx={{ height: "36px", width: "200px" }}
             >
               {departmentOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -227,14 +289,10 @@ export function Hospital(props: HospitalProps) {
             <IOSSwitch />
           </div>
 
-          {/* MUI 테이블 */}
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{
-              borderTop: "1px solid #14AC2B",
-              maxHeight: 600, // 높이 제한을 두어 페이지네이션이 보이도록 설정
-            }}
+            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -252,26 +310,32 @@ export function Hospital(props: HospitalProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {hospitals&&hospitals.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((hospital, index) => (
+                {hospitals && hospitals.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((hospital, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{hospital.dutyName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{parseAddress(hospital.dutyAddr)?.city}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{parseAddress(hospital.dutyAddr)?.region }</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{parseAddress(hospital.dutyAddr)?.region}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{hospital.dutyDivNam}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{hospital.tags ? hospital.tags.join(', ') : "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{"-"}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{hospital.tags ? hospital.tags : "-"}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{hospital.rnum}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{"-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                    onClick={() => handleEditClick(hospital)}
-                    ><FaPencilAlt/></IconButton></TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">비활성</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">삭제</TableCell>
+                      onClick={() => handleEditClick(hospital)}
+                    ><FaPencilAlt /></IconButton></TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
+                      onClick={() => handleInActivate(hospital.id)}
+                    ><GiNightSleep /></IconButton></TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">
+                      <IconButton
+                        onClick={() => handleDelete(hospital.id, hospital.dutyName)}
+                      ><FaTrashAlt /></IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          {hospitals&&<TablePagination
+          {hospitals && <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={hospitals.length}
@@ -280,8 +344,8 @@ export function Hospital(props: HospitalProps) {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />}
-           {/* 수정 다이얼로그 */}
-           <Dialog open={openDialog} onClose={handleCloseDialog}>
+          {/* 수정 다이얼로그 */}
+          <Dialog open={openDialog} onClose={handleCloseDialog}>
             <DialogTitle>병원 정보 수정</DialogTitle>
             <DialogContent>
               <TextField
@@ -297,6 +361,7 @@ export function Hospital(props: HospitalProps) {
                 fullWidth
                 value={editingHospital?.dutyAddr || ''}
                 onChange={(e) => setEditingHospital({ ...editingHospital!, dutyAddr: e.target.value })}
+                onClick={() => setOpenPostcode(true)}
               />
               <TextField
                 margin="dense"
@@ -309,9 +374,30 @@ export function Hospital(props: HospitalProps) {
                 margin="dense"
                 label="태그"
                 fullWidth
-                value={editingHospital?.tags ?editingHospital?.tags.join(', ') : ''}
-                onChange={(e) => setEditingHospital({ ...editingHospital!, tags: e.target.value.split(',').map(tag => tag.trim()) })}
+                value={editingHospital?.tags || ''}
+                onChange={(e) => setEditingHospital({ ...editingHospital!, tags: e.target.value })}
               />
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 1 }}>
+                {(editingHospital&&editingHospital.tags)&&editingHospital?.tags.split(',').map((tag, index) => (
+                  <Chip
+                    key={index}
+                    label={tag.trim()}
+                    onDelete={() => handleDeleteTag(tag.trim())}
+                    color="primary"
+                  />
+                ))}
+              </Box>
+              {openPostcode && (
+                <Dialog open={openPostcode} onClose={() => setOpenPostcode(false)}>
+                  <DialogTitle>주소 검색</DialogTitle>
+                  <DialogContent>
+                    <DaumPostcode onComplete={handleCompletePostcode} />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenPostcode(false)} color="primary">닫기</Button>
+                  </DialogActions>
+                </Dialog>
+              )}
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog} color="primary">취소</Button>
