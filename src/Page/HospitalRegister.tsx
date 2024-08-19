@@ -308,8 +308,8 @@ export function HospitalRegister(props: IHospitalRegisterProps) {
                                                 resize: "none",
                                                 width: "100%"
                                             }}
-                                            minRows={40}
-                                            maxRows={40}
+                                            minRows={36}
+                                            maxRows={36}
                                             value={introduction}
                                             onChange={(e) => setIntroduction(e.target.value)}
                                         />

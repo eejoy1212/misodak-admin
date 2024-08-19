@@ -105,6 +105,13 @@ export const deleteBanWord=async(id:number)=>{
   const { data } = await axiosInstance.delete(`/v1/admin/ban-word/${id}`);
   return data;
 }
+//금지어 수정
+export const modifyPutBanWord=async(id:number,word:string)=>{
+  const { data } = await axiosInstance.put(`/v1/admin/ban-word`,{
+    id,word
+  });
+  return data;
+}
 //금지어 조회
 export const getBanWords=async(page:number)=>{
   const { data } = await axiosInstance.get(`/v1/admin/ban-word/${page}`);

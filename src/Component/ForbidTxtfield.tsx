@@ -2,13 +2,15 @@ import { TextField } from '@mui/material';
 import * as React from 'react';
 
 export interface IForbidTxtfieldProps {
+  placeHolder?:string;
     word:string;
-    onChangeWord: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChangeWord?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function ForbidTxtfield (props: IForbidTxtfieldProps) {
   return (
     <TextField
+    placeholder={props.placeHolder??''}
     value={props.word}
     onChange={props.onChangeWord}
     sx={{
