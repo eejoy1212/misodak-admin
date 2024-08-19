@@ -7,8 +7,8 @@ const axiosInstance = axios.create({
 axios.defaults.withCredentials = true;
 
 // 병원 목록 가져오기
-export const getHospital = async () => {
-  const { data } = await axiosInstance.get("/v1/hospitals");
+export const getHospital = async (page:number) => {
+  const { data } = await axiosInstance.get(`/v1/admin/hospital/${page}`);
   return data;
 };
 
@@ -93,3 +93,20 @@ export const deleteHospital = async (id: number) => {
   const { data } = await axiosInstance.delete(`/v1/admin/hospital/${id}`);
   return data;
 };
+//금지어 등록
+export const regPostBanWord=async(word:string)=>{
+  const { data } = await axiosInstance.post(`/v1/admin/ban-word`,{
+    word:word
+  });
+  return data;
+}
+//금지어 삭제
+export const deleteBanWord=async(id:number)=>{
+  const { data } = await axiosInstance.delete(`/v1/admin/ban-word/${id}`);
+  return data;
+}
+//금지어 조회
+export const getBanWords=async(page:number)=>{
+  const { data } = await axiosInstance.get(`/v1/admin/ban-word/${page}`);
+  return data;
+}

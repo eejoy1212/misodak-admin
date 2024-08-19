@@ -72,7 +72,9 @@ background-color:#14AC2B;
     align-items: center;
     justify-content: flex-start;
     border-left: 1px solid #d9d9d9;
-    text-indent: 20px;
+    text-indent: 10px;
+font-size: 14px;
+
 }
 .select-sub-menu{
     cursor: pointer;
@@ -81,6 +83,8 @@ background-color:#14AC2B;
     align-items: center;
     justify-content: flex-start;
     border-left: 1px solid #14AC2B;
-    text-indent: 20px;
+    text-indent: 10px;
  font-weight: 600;
-    color: black;}
+    color: black;
+font-size: 14px;
+}

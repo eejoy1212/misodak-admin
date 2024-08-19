@@ -22,6 +22,7 @@ const menuTitleSx = {
 const iconStyle = { marginLeft: "10px" }
 export function DashboardLayout(props: DashboardLayoutProps) {
     const [openInfoTab,setOpenInfoTab]=React.useState(false)
+    const [openCommunityTab,setOpenCommunityTab]=React.useState(false)
     const location = useLocation()
     const navigate=useNavigate()
     const getSelected = (path: string) => {
@@ -30,6 +31,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
     }
     const onClickInfoTab=()=>{
         setOpenInfoTab(p=>!p)
+    }
+    const onClickCommunityTab=()=>{
+        setOpenCommunityTab(p=>!p)
     }
     return (
         <div className="dashboard-container">
@@ -93,7 +97,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                             }}
                         >병원관리</strong>
                     </li>
-                 {openInfoTab&&   <ul>
+                 {openInfoTab&&   <ul
+              
+                 >
                     <li
                     onClick={()=>{
                         navigate("/hospital")
@@ -124,17 +130,54 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                         }}
                         >이벤트관리</strong>
                     </li>
-                    <li className="menu">    <div
-                      className={`indicator ${getSelected("/community") ? "" : "opacity"}`}
+                    <li className={`menu ${openCommunityTab ? "select" : ""}`}
+                    onClick={onClickCommunityTab}
+                    >    <div
+                      className={`indicator ${openCommunityTab ? "" : "opacity"}`}
                     /><FaRegUser  size={"20px"}
-                    color={`${getSelected("/community") ? "#14AC2B" : "#999999"}`}
+                    color={`${openCommunityTab ? "#14AC2B" : "#999999"}`}
                     style={iconStyle}/>
                         <strong
                          style={{
-                            color: `${getSelected("/community") ? "#14AC2B" : "#999999"}`
+                            color: `${openCommunityTab ? "#14AC2B" : "#999999"}`
                         }}
                         >커뮤니티관리</strong>
                     </li>
+                    {openCommunityTab&&   <ul
+                   
+                    >
+                    <li
+                    onClick={()=>{
+                        navigate("/hospital")
+                    }}
+                    className={`${location.pathname==="/hospital"?"select-sub-menu":"sub-menu"}`}
+                    >글 임의 생성</li>
+                    <li
+                    className={`${location.pathname==="/hospital-register"?"select-sub-menu":"sub-menu"}`}
+                    onClick={()=>{
+                        navigate("/hospital-register")
+                    }}
+                    >댓글 임의 생성</li>
+                      <li
+                    className={`${location.pathname==="/hospital-register"?"select-sub-menu":"sub-menu"}`}
+                    onClick={()=>{
+                        navigate("/hospital-register")
+                    }}
+                    >
+                        
+                        게시글 임의 관리</li>
+                        <li
+                    className={`${location.pathname==="/forbidden-manage"?"select-sub-menu":"sub-menu"}`}
+                    onClick={()=>{
+                        navigate("/forbidden-manage")
+                    }}
+                    >
+                        
+                        금지어 관리</li>
+                    {/* <li
+                    className={`${location.pathname==="/hospital-edit"?"select-sub-menu":"sub-menu"}`}
+                    >정보 수정</li> */}
+                    </ul>}
                     <li className="menu">    <div
                          className={`indicator ${getSelected("/etc") ? "" : "opacity"}`}
                     />

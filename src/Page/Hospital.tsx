@@ -173,8 +173,8 @@ export function Hospital(props: HospitalProps) {
   };
 
   const fetchHospital = async () => {
-    const res = await getHospital();
-    setHospitals(res.content);
+    const res = await getHospital(1);
+    setHospitals(res);
   };
 
   useEffect(() => {

@@ -121,7 +121,7 @@ export function HospitalRegister(props: IHospitalRegisterProps) {
                                         onClick={handleImageClick}
                                         style={{ cursor: 'pointer', backgroundImage: `url(${selectedImage ? null : ImgContainer})` }}
                                     >
-                                        <img    
+                                       {selectedImage&& <img    
                                             alt="Hospital"
                                             src={selectedImage}
                                             style={{
@@ -130,7 +130,7 @@ export function HospitalRegister(props: IHospitalRegisterProps) {
                                                 justifyContent: "center",
                                                 height: "100%"
                                             }}
-                                        />
+                                        />}
                                     </div>
                                     <input
                                         id="imageUploadInput"

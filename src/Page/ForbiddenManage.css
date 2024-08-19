@@ -1,0 +1,15 @@
+.forbid-container{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.forbid-row{
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 500px;
+}
