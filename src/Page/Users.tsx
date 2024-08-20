@@ -101,7 +101,6 @@ export function Users(props: UserProps) {
 
   return (
     <div className="hospital-container">
-      <Typography fontSize={"18px"}>유저 조회</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
           sx={{
@@ -111,16 +110,22 @@ export function Users(props: UserProps) {
             paddingBottom: "0px",
           }}
         >
+      <Typography fontSize={"18px"}>유저 조회</Typography>
+
           <MainSearchBar placeholder='유저명, 닉네임' onSearch={() => { }} />
 
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 650 }}
           >
-            <Table aria-label="simple table" stickyHeader>
+            <Table 
+         size='small'
+            aria-label="simple table" stickyHeader>
               <TableHead>
-                <TableRow>
+                <TableRow
+           
+                >
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>이름</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">닉네임</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">연락처</TableCell>
@@ -137,17 +142,19 @@ export function Users(props: UserProps) {
               </TableHead>
               <TableBody>
                 {users.map((user, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: headerTxtColor }}>{user.name ?? "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{user.nickname ?? "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{user.phone ?? "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{user.email ?? "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{user.registerTime ? moment(user.registerTime).format("YY.MM.DD") : "-"}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{user.status ? `🟢` : `🛑`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{user.eventCount ?? "-"} 회</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{user.boardCount ?? "-"} 회</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{user.commentCount ?? "-"} 회</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">
+                  <TableRow key={index} 
+                  
+                  >
+                    <TableCell   sx={{ color: headerTxtColor  }}>{user.name ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.nickname ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.phone ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.email ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.registerTime ? moment(user.registerTime).format("YY.MM.DD") : "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.status ? `🟢` : `🛑`}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.eventCount ?? "-"} 회</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.boardCount ?? "-"} 회</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.commentCount ?? "-"} 회</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">
                       <IconButton
                         onClick={() => { onOpenEdit(user) }}
                       ><FaPencilAlt /></IconButton>
