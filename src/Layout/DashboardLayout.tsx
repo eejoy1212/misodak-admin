@@ -24,6 +24,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
     const [openInfoTab,setOpenInfoTab]=React.useState(false)
     const [openCommunityTab,setOpenCommunityTab]=React.useState(false)
     const [openEventTab,setOpenEventTab]=React.useState(false)
+    const [openEtcTab,setOpenEtcTab]=React.useState(false)
     const location = useLocation()
     const navigate=useNavigate()
     const getSelected = (path: string) => {
@@ -38,6 +39,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
     }
     const onClickEventTab=()=>{
         setOpenEventTab(p=>!p)
+    }
+    const onClickEtcTab=()=>{
+        setOpenEtcTab(p=>!p)
     }
     return (
         <div className="dashboard-container">
@@ -163,6 +167,24 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                        navigate("/exhibit")
                    }}
                    >기획전 관리</li>
+                     <li
+                   className={`${location.pathname==="/apppush-create"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/apppush-create")
+                   }}
+                   >앱푸시 생성</li>
+                    <li
+                   className={`${location.pathname==="/apppushs"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/apppushs")
+                   }}
+                   >앱푸시 관리</li>
+                      <li
+                   className={`${location.pathname==="/users"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/users")
+                   }}
+                   >유저조회</li>
                    </ul>}
                     <li className={`menu ${openCommunityTab ? "select" : ""}`}
                     onClick={onClickCommunityTab}
@@ -212,20 +234,33 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                     className={`${location.pathname==="/hospital-edit"?"select-sub-menu":"sub-menu"}`}
                     >정보 수정</li> */}
                     </ul>}
-                    <li className="menu">    <div
-                         className={`indicator ${getSelected("/etc") ? "" : "opacity"}`}
+                    <li className={`menu ${openEtcTab? "select" : ""}`}
+                    onClick={onClickEtcTab}
+                    >    <div
+                         className={`indicator ${openEtcTab ? "" : "opacity"}`}
                     />
                     <MdDiamond
                     size={"20px"}
-                    color={`${getSelected("/etc") ? "#14AC2B" : "#999999"}`}
+                    color={`${openEtcTab ? "#14AC2B" : "#999999"}`}
                     style={iconStyle}
                     />
                         <strong
                          style={{
-                            color: `${getSelected("/etc") ? "#14AC2B" : "#999999"}`
+                            color: `${openEtcTab ? "#14AC2B" : "#999999"}`
                         }}
                         >기타관리</strong>
                     </li>
+                    {openEtcTab&&   <ul
+                   
+                   >
+                   <li
+                onClick={()=>{
+                       navigate("/inquirys")
+                   }}
+                   className={`${location.pathname==="/inquirys"?"select-sub-menu":"sub-menu"}`}
+                   >1:1 문의내역</li>
+                   
+                   </ul>}
                 </ul>
             </div>
             <Outlet />

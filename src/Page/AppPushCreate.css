@@ -1,0 +1,14 @@
+.apppush-container{
+    width: 100%;
+}
+.push-row{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: calc(100% - 50px - 50px);
+    gap: 30px;
+}
+.push-title{
+    width: 140px;
+    text-indent: 20px;
+}

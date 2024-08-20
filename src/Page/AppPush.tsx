@@ -36,14 +36,13 @@ import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
 
-interface Urls {
+interface AppPush {
   id: number;
-  eventName:string;
-  startAt:string;
-  endAt:string;
-  hospitalDutyName:string;
-  hospitalDutyAddr:string;
-  activated:boolean;
+  campaignName:string;
+status:string;
+ctr:string;
+activated:boolean;
+sendAt:string;
 }
 
 export interface UrlsProps { }
@@ -101,10 +100,10 @@ const IOSSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-export function Urls(props: UrlsProps) {
+export function AppPushs(props: UrlsProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
-    const [urls, setUrls] = useState<Urls[]>([]);
+    const [urls, setUrls] = useState<AppPush[]>([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
@@ -118,7 +117,7 @@ export function Urls(props: UrlsProps) {
   }, []);
   return (
     <div className="hospital-container">
-      <Typography fontSize={"18px"}>이벤트정보 - 조회</Typography>
+      <Typography fontSize={"18px"}>앱푸시 - 관리</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
           sx={{
@@ -155,29 +154,28 @@ export function Urls(props: UrlsProps) {
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>이벤트명</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">기간</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">상담참여</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">병원명</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>캠페인명</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">대상</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">Status</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">CTR</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">도시</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">지역</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">진료과</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">CSV</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">발송일시</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">완료</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">숨김</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${url.startAt} ~ ${url.endAt}`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.city}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.region}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }}>{url.campaignName}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{`대상`}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.status}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.ctr}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{'도시'}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{'지역'}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.sendAt}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                     <IconButton
                       onClick={() => {}}

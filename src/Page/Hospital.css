@@ -11,3 +11,10 @@
     gap: 30px;
     align-items: center;
 }
+.custom-pagenation-row{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 50px;
+    gap: 50px;
+}

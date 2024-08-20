@@ -1,0 +1,10 @@
+.user-edit-title{
+    width:120px;
+    align-items: flex-start;
+}
+.user-edit-row{
+    display: flex;
+    flex-direction: row;
+    height: 60px;
+    align-items: center;
+}

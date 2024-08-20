@@ -35,18 +35,23 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
+import moment from 'moment';
 
-interface Urls {
+interface Inquiry {
   id: number;
-  eventName:string;
-  startAt:string;
-  endAt:string;
-  hospitalDutyName:string;
-  hospitalDutyAddr:string;
+  name:string;
+  nickname:string;
+  phone:string;
+  email:string;
+  registerTime:string;
+  status:string;
+  eventCount:string;
+  boardCount:string;
+  commnetCount:string;
   activated:boolean;
 }
 
-export interface UrlsProps { }
+export interface InquiryProps { }
 export interface SwitchProps { }
 
 
@@ -101,16 +106,16 @@ const IOSSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-export function Urls(props: UrlsProps) {
+export function Inquirys(props: InquiryProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
-    const [urls, setUrls] = useState<Urls[]>([]);
+    const [inquirys, setInquirys] = useState<Inquiry[]>([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
     const res = await getEvents(page);
     console.log("이벤트 조회>>>",res)
-    setUrls(res);
+    setInquirys(res);
   };
 
   useEffect(() => {
@@ -118,7 +123,7 @@ export function Urls(props: UrlsProps) {
   }, []);
   return (
     <div className="hospital-container">
-      <Typography fontSize={"18px"}>이벤트정보 - 조회</Typography>
+      <Typography fontSize={"18px"}>1:1 문의내역</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
           sx={{
@@ -128,24 +133,8 @@ export function Urls(props: UrlsProps) {
             paddingBottom: "0px",
           }}
         >
-          <MainSearchBar placeholder='병원명,도시,이벤트' onSearch={()=>{}} />
-          <div className="filter-row">
-            <Typography fontSize={"16px"}>진료과</Typography>
-            <Select
-              value={""}
-              onChange={()=>{}}
-              displayEmpty
-              sx={{ height: "36px", width: "200px" }}
-            >
-              {departmentOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
-            <IOSSwitch />
-          </div>
+          {/* <MainSearchBar placeholder='유저명, 닉네임' onSearch={()=>{}} /> */}
+         
 
           <TableContainer
             component={Paper}
@@ -155,41 +144,38 @@ export function Urls(props: UrlsProps) {
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>이벤트명</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">기간</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">상담참여</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">병원명</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">도시</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">지역</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">진료과</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">CSV</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>작성자</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">닉네임</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">문의 글</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">이메일</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">작성일</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">숨김</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
+                {inquirys && inquirys.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((inquiry, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${url.startAt} ~ ${url.endAt}`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.city}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.region}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }}>{inquiry.name}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.nickname}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.phone}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.email}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{moment(inquiry.registerTime).format("YY.MM.DD")}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.status}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.eventCount} 회</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.boardCount} 회</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.commnetCount} 회</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                     <IconButton
                       onClick={() => {}}
-                    ><GrDocumentCsv /></IconButton>
+                    ><FaPencilAlt /></IconButton>
                     </TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
-                    ><FaPencilAlt /></IconButton></TableCell>
+                  
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
                       onClick={() => {}}
                     >
-                    {url.activated===true?  <GiNightSleep />:
+                    {inquiry.activated===true?  <GiNightSleep />:
                     <GiSun
                     color='#14AC2B'
                     />}
@@ -204,10 +190,10 @@ export function Urls(props: UrlsProps) {
               </TableBody>
             </Table>
           </TableContainer>
-          {urls && <TablePagination
+          {inquirys && <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={urls.length}
+            count={inquirys.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={()=>{}}
