@@ -1,10 +1,7 @@
 import axios from "axios";
+import { axiosInstance } from "./base";
 
-const axiosInstance = axios.create({
-  baseURL: "http://15.164.184.13:8080",
-});
-// prevent CORS error
-axios.defaults.withCredentials = true;
+
 
 // 병원 목록 가져오기
 export const getHospital = async (page:number) => {

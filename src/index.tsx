@@ -9,6 +9,10 @@ import { Main } from './Page/Main';
 import { Hospital } from './Page/Hospital';
 import { HospitalRegister } from './Page/HospitalRegister';
 import { ForbiddenManage } from './Page/ForbiddenManage';
+import { Urls } from './Page/Urls';
+import { UrlRegister } from './Page/UrlRegister';
+import { ExhibitRegister } from './Page/ExhibitRegister';
+import { Exhibit } from './Page/Exhibit';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -42,7 +46,26 @@ const router = createBrowserRouter(
   path: "/forbidden-manage",
   element: <ForbiddenManage/>
 },
-
+{
+      
+  path: "/url-create",
+  element: <UrlRegister/>
+},
+{
+      
+  path: "/urls",
+  element: <Urls/>
+},
+{
+      
+  path: "/exhibit-create",
+  element: <ExhibitRegister/>
+},
+{
+      
+  path: "/exhibit",
+  element: <Exhibit/>
+},
 ]
 }
 

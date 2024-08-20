@@ -23,6 +23,7 @@ const iconStyle = { marginLeft: "10px" }
 export function DashboardLayout(props: DashboardLayoutProps) {
     const [openInfoTab,setOpenInfoTab]=React.useState(false)
     const [openCommunityTab,setOpenCommunityTab]=React.useState(false)
+    const [openEventTab,setOpenEventTab]=React.useState(false)
     const location = useLocation()
     const navigate=useNavigate()
     const getSelected = (path: string) => {
@@ -34,6 +35,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
     }
     const onClickCommunityTab=()=>{
         setOpenCommunityTab(p=>!p)
+    }
+    const onClickEventTab=()=>{
+        setOpenEventTab(p=>!p)
     }
     return (
         <div className="dashboard-container">
@@ -116,20 +120,50 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                     className={`${location.pathname==="/hospital-edit"?"select-sub-menu":"sub-menu"}`}
                     >정보 수정</li> */}
                     </ul>}
-                    <li className="menu">    <div
-                          className={`indicator ${getSelected("/event") ? "" : "opacity"}`}
+                    <li className={`menu ${openEventTab ? "select" : ""}`}
+                    onClick={onClickEventTab}
+                    >    <div
+                          className={`indicator ${openEventTab ? "" : "opacity"}`}
                     />
                         <MdLayers
                             size={"20px"}
-                            color={`${getSelected("/event") ? "#14AC2B" : "#999999"}`}
+                            color={`${openEventTab ? "#14AC2B" : "#999999"}`}
                             style={iconStyle}
                         />
                         <strong
                          style={{
-                            color: `${getSelected("/event") ? "#14AC2B" : "#999999"}`
+                            color: `${openEventTab ? "#14AC2B" : "#999999"}`
                         }}
                         >이벤트관리</strong>
                     </li>
+                    {openEventTab&&   <ul
+                   
+                   >
+                   <li
+                onClick={()=>{
+                       navigate("/url-create")
+                   }}
+                   className={`${location.pathname==="/url-create"?"select-sub-menu":"sub-menu"}`}
+                   >URL 생성</li>
+                   <li
+                   className={`${location.pathname==="/urls"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/urls")
+                   }}
+                   >URL 정보</li>
+                     <li
+                   className={`${location.pathname==="/exhibit-create"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/exhibit-create")
+                   }}
+                   >기획전 생성</li>
+                   <li
+                   className={`${location.pathname==="/exhibit"?"select-sub-menu":"sub-menu"}`}
+                   onClick={()=>{
+                       navigate("/exhibit")
+                   }}
+                   >기획전 관리</li>
+                   </ul>}
                     <li className={`menu ${openCommunityTab ? "select" : ""}`}
                     onClick={onClickCommunityTab}
                     >    <div

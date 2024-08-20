@@ -1,0 +1,64 @@
+.url-reg-container{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.url-create-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 36px;
+}
+.title-box-with-check{
+    width: 150px;
+    padding-top: 20px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #d9d9d9;
+    background-color: #FBFFF9;
+    
+}
+.check-row{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+}
+.datepicker-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.preview-card{
+    width: 100%;
+    background-color: #D8F0CB;
+    border: 1px solid #999999;
+    height: 700px;
+    font-size: 20px;
+    color: #999999;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btns-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 30px;
+}
+.preview-box{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+}

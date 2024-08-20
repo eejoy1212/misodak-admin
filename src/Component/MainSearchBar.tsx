@@ -5,9 +5,10 @@ import { FaSearch } from 'react-icons/fa';
 export interface MainSearchBarProps {
   placeholder: string;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  size?: 'small' | 'medium';
 }
 
-export function MainSearchBar({ placeholder, onSearch }: MainSearchBarProps) {
+export function MainSearchBar({ placeholder, onSearch,size="medium" }: MainSearchBarProps) {
   return (
     <Box
       sx={{
@@ -15,6 +16,7 @@ export function MainSearchBar({ placeholder, onSearch }: MainSearchBarProps) {
       }}
     >
       <TextField
+      size={size}
         placeholder={placeholder}
         variant="outlined"
         onChange={onSearch}
@@ -26,6 +28,7 @@ export function MainSearchBar({ placeholder, onSearch }: MainSearchBarProps) {
           ),
         }}
         sx={{
+     
           width: "100%",
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
