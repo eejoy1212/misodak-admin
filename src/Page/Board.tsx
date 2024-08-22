@@ -22,24 +22,27 @@ import {
 } from '@mui/material';
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
-import moment from 'moment';
 import { getUsers } from '../api/user';
-import './Users.css';
+import './Board.css';
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { MainSearchBar } from '../Component/MainSearchBar';
+import { getBoard } from '../api/board';
+import moment from 'moment';
 
 interface Write {
   id: number;
-  name: string;
-  nickname: string;
-  phone: string;
-  email: string;
-  registerTime: string;
-  status: string;
-  eventCount: string;
-  boardCount: string;
-  commentCount: string;
-  activated: boolean;
+writer:string;
+content:string;
+category:string;
+image1:string;
+image2:string;
+image3:string;
+image4:string;
+image5:string;
+views:string;
+activated:boolean;
+updateDate:string;
+registerDate:string;
 }
 interface WriteProps {
 
@@ -47,7 +50,7 @@ interface WriteProps {
 export function Board(props: WriteProps) {
   const headerColor = "#F0FBEB";
   const headerTxtColor = "#333333";
-  const [users, setUsers] = useState<Write[]>([]);
+  const [writes, setWrites] = useState<Write[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openEdit, setOpenEdit] = useState(false);
@@ -55,9 +58,9 @@ export function Board(props: WriteProps) {
 
   const fetchUrls = async () => {
     try {
-      const res = await getUsers(page);
-      console.log("유저목록 조회>>>", res);
-      setUsers([]);
+      const res = await getBoard(page);
+      console.log("게시글 조회>>>", res);
+      setWrites(res);
       return res.length;
     } catch (error) {
       console.error(error);
@@ -85,7 +88,7 @@ export function Board(props: WriteProps) {
   }, [page]);
 
   const onClickNext = async () => {
-    const usersLength = users.length;
+    const usersLength = writes.length;
     console.log("user length>>>", usersLength);
 
     if (usersLength === rowsPerPage) {
@@ -127,6 +130,7 @@ export function Board(props: WriteProps) {
            
                 >
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>작성일</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>수정일</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">작성자</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">내용</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">카테고리</TableCell>
@@ -135,35 +139,61 @@ export function Board(props: WriteProps) {
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">이미지3</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">이미지4</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">이미지5</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">조회수</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user, index) => (
+                {writes.map((write, index) => (
                   <TableRow key={index} 
                   
                   >
-                    <TableCell   sx={{ color: headerTxtColor  }}>{user.name ?? "-"}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.nickname ?? "-"}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.phone ?? "-"}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{user.email ?? "-"}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.registerTime ? moment(user.registerTime).format("YY.MM.DD") : "-"}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.status ? `🟢` : `🛑`}</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.eventCount ?? "-"} 회</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.boardCount ?? "-"} 회</TableCell>
-                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{user.commentCount ?? "-"} 회</TableCell>
+                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.registerDate).format("YYYY-MM-DD")}</TableCell>
+                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.updateDate).format("YYYY-MM-DD")}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.writer ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.content ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.category ?? "-"}</TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">
+                      
+                      <img
+                      className='write-img'
+                      src={write.image1}
+                      />
+                    </TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">  
+                      <img
+                      className='write-img'
+                      src={write.image2}
+                      /></TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">  
+                      <img
+                      className='write-img'
+                      src={write.image3}
+                      /></TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">  
+                      <img
+                      className='write-img'
+                      src={write.image4}
+                      /></TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">  
+                      <img
+                      className='write-img'
+                      src={write.image5}
+                      /></TableCell>
+                    <TableCell  sx={{ color: headerTxtColor  }} align="center">{write.views}</TableCell>
+                
                     <TableCell  sx={{ color: headerTxtColor  }} align="center">
                       <IconButton
-                        onClick={() => { onOpenEdit(user) }}
+                        onClick={() => { onOpenEdit(write) }}
                       ><FaPencilAlt /></IconButton>
                     </TableCell>
 
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
                       onClick={() => { }}
                     >
-                      {user.activated === true ? <GiNightSleep /> :
+                      {write.activated === true ? <GiNightSleep /> :
                         <GiSun
                           color='#14AC2B'
                         />}
@@ -205,123 +235,7 @@ export function Board(props: WriteProps) {
             >Next</Button>
           </div>
 
-          {/* 수정 다이얼로그 */}
-          <Dialog open={openEdit} onClose={onClose}>
-            <DialogContent
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center"
-              }}
-            >
-              <DialogTitle>유저 수정</DialogTitle>
-
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  가입일
-                </div>
-                <TextField
-                  size='small'
-                  sx={{
-                    width: "300px"
-                  }}
-                  type="date"
-                  value={selected?.registerTime ? moment(selected.registerTime).format('YYYY-MM-DD') : ''}
-                  onChange={(e) => handleFieldChange('registerTime', e.target.value)}
-                  fullWidth
-                />
-              </div>
-
-              {/* 다른 필드들도 비슷하게 추가 가능합니다. 예시: */}
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  이름
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.name ?? ''}
-                  onChange={(e) => handleFieldChange('name', e.target.value)}
-                />
-              </div>
-
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  닉네임
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.nickname ?? ''}
-                  onChange={(e) => handleFieldChange('nickname', e.target.value)}
-                />
-              </div>
-
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  연락처
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.phone ?? ''}
-                  onChange={(e) => handleFieldChange('phone', e.target.value)}
-                />
-              </div>
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  이메일
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.email ?? ''}
-                  onChange={(e) => handleFieldChange('email', e.target.value)}
-                />
-              </div>
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  Status
-                </div>
-                <Select
-                  size='small'
-                  sx={{
-                    width: "300px"
-                  }}
-                  value={selected?.status ? "🟢" : "🛑"}
-                  onChange={(e) => handleFieldChange('status', e.target.value)}
-                  fullWidth
-                >
-                  <MenuItem value={"🟢"}>🟢</MenuItem>
-                  <MenuItem value={"🛑"}>🛑</MenuItem>
-                </Select>
-              </div>
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  이벤트참여
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.eventCount ?? ''}
-                  onChange={(e) => handleFieldChange('eventCount', e.target.value)}
-                />
-              </div>
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  작성 글
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.boardCount ?? ''}
-                  onChange={(e) => handleFieldChange('boardCount', e.target.value)}
-                />
-              </div>
-              <div className="user-edit-row">
-                <div className="user-edit-title">
-                  작성 댓글
-                </div>
-                <HospitalRegisterTxtfield
-                  value={selected?.commentCount ?? ''}
-                  onChange={(e) => handleFieldChange('commentCount', e.target.value)}
-                />
-              </div>
-
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onClose} color="primary">취소</Button>
-              <Button onClick={() => { /* 유저 저장 로직 추가 */ }} color="primary">저장</Button>
-            </DialogActions>
-          </Dialog>
+       
         </CardContent>
       </Card>
     </div>

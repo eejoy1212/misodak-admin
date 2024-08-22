@@ -25,6 +25,7 @@ import {
   Chip,
   Box
 } from '@mui/material';
+import { BiSolidHide } from "react-icons/bi";
 import { GrDocumentCsv } from "react-icons/gr";
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
@@ -42,6 +43,7 @@ interface Urls {
   startAt:string;
   endAt:string;
   hospitalDutyName:string;
+  hospitalDutyDivName:string;
   hospitalDutyAddr:string;
   activated:boolean;
 }
@@ -105,7 +107,7 @@ export function Urls(props: UrlsProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
     const [urls, setUrls] = useState<Urls[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
     const res = await getEvents(page);
@@ -175,9 +177,10 @@ export function Urls(props: UrlsProps) {
                     <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`${url.startAt} ~ ${url.endAt}`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName??"-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.city}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.region}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.hospitalDutyDivName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                     <IconButton
                       onClick={() => {}}
@@ -194,6 +197,11 @@ export function Urls(props: UrlsProps) {
                     color='#14AC2B'
                     />}
                     </IconButton></TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">
+                      <IconButton
+                        onClick={() => {}}
+                      ><BiSolidHide /></IconButton>
+                    </TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
                         onClick={() => {}}

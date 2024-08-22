@@ -17,6 +17,7 @@ export function ForbiddenManage(props: ForbiddenManageProps) {
   const [delId, setDelId] = React.useState<number | null>(null);
   const [modifyId, setModifyId] = React.useState<number | null>(null);
   const [banWords, setBanWords] = React.useState<WordProps[]>([]);
+  const [page,setPage]=React.useState(0)
 //   const [selectedId, setSelectedId] = React.useState<number | null>(null); // 선택된 ID 상태 추가
 
   const onChangeWord = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +60,7 @@ export function ForbiddenManage(props: ForbiddenManageProps) {
   };
 
   const fetchGetBanWords = async () => {
-    const res = await getBanWords(1);
+    const res = await getBanWords(page);
     console.log("금지어 리스트>>>", res);
     setBanWords(res);
   };

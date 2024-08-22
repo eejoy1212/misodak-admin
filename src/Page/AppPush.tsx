@@ -35,6 +35,7 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
+import { getAppPushs } from '../api/apppush';
 
 interface AppPush {
   id: number;
@@ -43,6 +44,9 @@ status:string;
 ctr:string;
 activated:boolean;
 sendAt:string;
+segment:string;
+city:string;
+location:string;
 }
 
 export interface UrlsProps { }
@@ -104,11 +108,11 @@ export function AppPushs(props: UrlsProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
     const [urls, setUrls] = useState<AppPush[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
-    const res = await getEvents(page);
-    console.log("이벤트 조회>>>",res)
+    const res = await getAppPushs(page);
+    console.log("앱푸시 조회>>>",res)
     setUrls(res);
   };
 
@@ -162,6 +166,7 @@ export function AppPushs(props: UrlsProps) {
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">지역</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">발송일시</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">완료</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
@@ -170,17 +175,14 @@ export function AppPushs(props: UrlsProps) {
                 {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{url.campaignName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`대상`}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.segment}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{url.status}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.ctr}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{'도시'}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{'지역'}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.sendAt}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">
-                    <IconButton
-                      onClick={() => {}}
-                    ><GrDocumentCsv /></IconButton>
-                    </TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.ctr+"%"}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.city}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.location}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{url.sendAt??"-"}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{'완료'}</TableCell>
+                   
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
                       onClick={() => {}}
                     ><FaPencilAlt /></IconButton></TableCell>

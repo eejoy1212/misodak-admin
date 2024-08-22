@@ -35,15 +35,20 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
+import { getExhibits } from '../api/exhibit';
+import moment from 'moment';
 
 // 병원 데이터 타입 정의
 interface Exhibit {
   id: number;
-  eventName:string;
-  startAt:string;
-  endAt:string;
+  name:string;
+  startTime:string;
+  endTime:string;
   hospitalDutyName:string;
   hospitalDutyAddr:string;
+  eventIds:[];
+  status:string;
+  exposureLocation:string;
   activated:boolean;
 }
 
@@ -105,13 +110,13 @@ const IOSSwitch = styled((props: SwitchProps) => (
 export function Exhibit(props: ExhibitProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
-    const [urls, setUrls] = useState<Exhibit[]>([]);
-  const [page, setPage] = useState(1);
+    const [exhibits, setExhibits] = useState<Exhibit[]>([]);
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
-    const res = await getEvents(page);
-    console.log("이벤트 조회>>>",res)
-    setUrls(res);
+    const res = await getExhibits(page);
+    console.log("기획전 조회>>>",res)
+    setExhibits(res);
   };
 
   useEffect(() => {
@@ -169,26 +174,22 @@ export function Exhibit(props: ExhibitProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
+                {exhibits && exhibits.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((exhibit, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${url.startAt} ~ ${url.endAt}`}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }}>{exhibit.name}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${moment(exhibit.startTime).format("YYYY-MM-DD")} ~ ${moment(exhibit.endTime).format("YYYY-MM-DD")}`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.city}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.region}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">
-                    <IconButton
-                      onClick={() => {}}
-                    ><GrDocumentCsv /></IconButton>
-                    </TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{'클릭수'}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{`${exhibit.eventIds?exhibit.eventIds.length:0} 개`}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{exhibit.status?"진행 중":"만료"}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{exhibit.exposureLocation??"-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
                       onClick={() => {}}
                     ><FaPencilAlt /></IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
                       onClick={() => {}}
                     >
-                    {url.activated===true?  <GiNightSleep />:
+                    {exhibit.activated===true?  <GiNightSleep />:
                     <GiSun
                     color='#14AC2B'
                     />}
@@ -203,10 +204,10 @@ export function Exhibit(props: ExhibitProps) {
               </TableBody>
             </Table>
           </TableContainer>
-          {urls && <TablePagination
+          {exhibits && <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={urls.length}
+            count={exhibits.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={()=>{}}

@@ -36,9 +36,12 @@ import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
 import moment from 'moment';
+import { getInquiries } from '../api/inquiry';
 
 interface Inquiry {
   id: number;
+  sender:string;
+  message:string;
   name:string;
   nickname:string;
   phone:string;
@@ -110,11 +113,11 @@ export function Inquirys(props: InquiryProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
     const [inquirys, setInquirys] = useState<Inquiry[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
-    const res = await getEvents(page);
-    console.log("이벤트 조회>>>",res)
+    const res = await getInquiries(page);
+    console.log("문의내역 조회>>>",res)
     setInquirys(res);
   };
 
@@ -145,9 +148,7 @@ export function Inquirys(props: InquiryProps) {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>작성자</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">닉네임</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">문의 글</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">이메일</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">작성일</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
@@ -157,15 +158,10 @@ export function Inquirys(props: InquiryProps) {
               <TableBody>
                 {inquirys && inquirys.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((inquiry, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: headerTxtColor }}>{inquiry.name}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.nickname}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.phone}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{inquiry.email}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }}>{inquiry.sender}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }}>{inquiry.message}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{moment(inquiry.registerTime).format("YY.MM.DD")}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.status}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.eventCount} 회</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.boardCount} 회</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{inquiry.commnetCount} 회</TableCell>
+               
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                     <IconButton
                       onClick={() => {}}

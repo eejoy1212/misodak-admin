@@ -120,7 +120,7 @@ export function Users(props: UserProps) {
             sx={{ borderTop: "1px solid #14AC2B", maxHeight: 650 }}
           >
             <Table 
-         size='small'
+        //  size='small'
             aria-label="simple table" stickyHeader>
               <TableHead>
                 <TableRow
