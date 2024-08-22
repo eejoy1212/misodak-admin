@@ -36,6 +36,7 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
+import moment from 'moment';
 
 interface Urls {
   id: number;
@@ -175,7 +176,7 @@ export function Urls(props: UrlsProps) {
                 {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${url.startAt} ~ ${url.endAt}`}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{`${moment(url.startAt).format("YYYY-MM-DD")} ~ ${moment(url.endAt).format("YYYY-MM-DD")}`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{url.hospitalDutyName??"-"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{parseAddress(url.hospitalDutyAddr)?.city}</TableCell>
