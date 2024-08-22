@@ -17,6 +17,8 @@ import { AppPushCreate } from './Page/AppPushCreate';
 import { AppPushs } from './Page/AppPush';
 import { Users } from './Page/Users';
 import { Inquirys } from './Page/Inquirys';
+import { Board } from './Page/Board';
+import { Term } from './Page/Term';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -89,6 +91,16 @@ const router = createBrowserRouter(
       
   path: "/inquirys",
   element: <Inquirys/>
+},
+{
+      
+  path: "/board",
+  element: <Board/>
+},
+{
+      
+  path: "/term",
+  element: <Term/>
 },
 ]
 }

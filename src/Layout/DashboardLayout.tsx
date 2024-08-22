@@ -215,9 +215,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                     }}
                     >댓글 임의 생성</li>
                       <li
-                    className={`${location.pathname==="/hospital-register"?"select-sub-menu":"sub-menu"}`}
+                    className={`${location.pathname==="/board"?"select-sub-menu":"sub-menu"}`}
                     onClick={()=>{
-                        navigate("/hospital-register")
+                        navigate("/board")
                     }}
                     >
                         
@@ -259,7 +259,12 @@ export function DashboardLayout(props: DashboardLayoutProps) {
                    }}
                    className={`${location.pathname==="/inquirys"?"select-sub-menu":"sub-menu"}`}
                    >1:1 문의내역</li>
-                   
+                     <li
+                onClick={()=>{
+                       navigate("/term")
+                   }}
+                   className={`${location.pathname==="/term"?"select-sub-menu":"sub-menu"}`}
+                   >이용약관</li>
                    </ul>}
                 </ul>
             </div>
