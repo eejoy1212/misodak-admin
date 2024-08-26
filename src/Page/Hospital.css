@@ -18,3 +18,9 @@
     /* height: 50px; */
     gap: 50px;
 }
+.exhibit-search-row{
+    display: flex;
+    align-items: center;
+    gap: 60px;
+
+}

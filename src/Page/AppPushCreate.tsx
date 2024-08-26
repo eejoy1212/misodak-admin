@@ -6,9 +6,15 @@ export interface IAppPushCreateProps {
 }
 
 export function AppPushCreate (props: IAppPushCreateProps) {
+  const [campaignName,setCampainName]=React.useState<string>("")
+  const [filter,setFilter]=React.useState<string>("")
+  const [segemnt,setSegment]=React.useState<string>("")
+  const [title,setTitle]=React.useState<string>("")
+  const [body,setBody]=React.useState<string>("")
+  
   return (
     <div className='apppush-container'>
-      <Card
+      {/* <Card
       sx={{
         width:"50%"
       }}
@@ -21,17 +27,19 @@ export function AppPushCreate (props: IAppPushCreateProps) {
             gap:"30px",
             alignItems:"center"
         }}
-        >
-            <Typography
+        > */}
+            {/* <Typography
             fontSize={"18px"}
-            >푸시생성</Typography>
+            >푸시생성</Typography> */}
             {/* 캠페인명 */}
             <div className="push-row">
                 <div className="push-title">
                 <Typography>캠페인명</Typography>
                 </div>    <HospitalRegisterTxtfield
-                value=''
-                onChange={()=>{}}
+                value={campaignName}
+                onChange={(e)=>{
+                  setCampainName(e.target.value)
+                }}
                 />
             </div>
              {/* Push 대상 */}
@@ -39,8 +47,10 @@ export function AppPushCreate (props: IAppPushCreateProps) {
                 <div className="push-title">
                 <Typography>Push 대상</Typography>
                 </div>    <HospitalRegisterTxtfield
-                value=''
-                onChange={()=>{}}
+                value={filter}
+                onChange={(e)=>{
+                  setFilter(e.target.value)
+                }}
                 />
             </div>
              {/* Segment */}
@@ -48,8 +58,10 @@ export function AppPushCreate (props: IAppPushCreateProps) {
                 <div className="push-title">
                 <Typography>Segment</Typography>
                 </div>    <HospitalRegisterTxtfield
-                value=''
-                onChange={()=>{}}
+                value={segemnt}
+                onChange={(e)=>{
+                  setSegment(e.target.value)
+                }}
                 />
             </div>
             {/* 앱푸시 제목 */}
@@ -57,21 +69,24 @@ export function AppPushCreate (props: IAppPushCreateProps) {
                 <div className="push-title">
                 <Typography>앱푸시 제목</Typography>
                 </div>    <HospitalRegisterTxtfield
-                value=''
-                onChange={()=>{}}
+                value={title}
+                onChange={(e)=>{
+                  setTitle(e.target.value)
+                }}
                 />
             </div>
              {/* 이벤트 순서 */}
              <div className="push-row">
                 <div className="push-title">
-                <Typography>이벤트 순서</Typography>
+                <Typography>앱푸시 내용</Typography>
                 </div>    <TextareaAutosize
                 style={{
                     resize:"none",
                     width:"290px",
                     height:"300px"
-                    // marginLeft:"10px"
                 }}
+                value={body}
+                onChange={(e)=>{setBody(e.target.value)}}
                 />
             </div>
             <div
@@ -103,8 +118,8 @@ export function AppPushCreate (props: IAppPushCreateProps) {
                                  }}
                                 >앱푸시 생성</Button>
                                 </div>
-        </CardContent>
-      </Card>
+        {/* </CardContent>
+      </Card> */}
     </div>
   );
 }

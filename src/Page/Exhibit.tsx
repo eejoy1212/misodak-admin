@@ -25,7 +25,7 @@ import {
   Chip,
   Box
 } from '@mui/material';
-import { GrDocumentCsv } from "react-icons/gr";
+import { GrClose, GrDocumentCsv } from "react-icons/gr";
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
@@ -35,8 +35,9 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
-import { getExhibits } from '../api/exhibit';
+import { deleteExhibit, getExhibits, putActivateExhibit, searchGetExhibits } from '../api/exhibit';
 import moment from 'moment';
+import { ExhibitRegister } from './ExhibitRegister';
 
 // 병원 데이터 타입 정의
 interface Exhibit {
@@ -50,6 +51,8 @@ interface Exhibit {
   status:string;
   exposureLocation:string;
   activated:boolean;
+  thumbnail:string;
+  detail:string;
 }
 
 export interface ExhibitProps { }
@@ -111,19 +114,103 @@ export function Exhibit(props: ExhibitProps) {
     const headerColor = "#F0FBEB";
     const headerTxtColor = "#333333";
     const [exhibits, setExhibits] = useState<Exhibit[]>([]);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [openDialog, setOpenDialog] = useState(false);
+ const [openAddDialog,setOpenAddDialog]=useState(false)
+    const [editingExhibit, setEditingExhibit] = useState<Exhibit | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const fetchUrls = async () => {
+    
     const res = await getExhibits(page);
     console.log("기획전 조회>>>",res)
     setExhibits(res);
-  };
 
+  };
+  const fetchSearchExhibit = async (keyword: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    const timeOut=setTimeout(async()=>{
+      await searchGetExhibits(page,keyword)
+      .then(res=>setExhibits(res))
+      .catch(err=>console.log("기획전 검색 오류:",err))
+    },1000)
+    setSearchTimeout(timeOut);
+  };
+  const onClickNext = async () => {
+    const nextPage = page + 1;
+    
+    // 다음 페이지 데이터를 가져와서 확인
+    const res = await getExhibits(nextPage);
+
+    // 다음 페이지 데이터가 없으면 페이지를 증가시키지 않음
+    if (res.length > 0) {
+        setExhibits(res);
+        setPage(nextPage);
+    } else {
+        console.log("더 이상 페이지가 없습니다.");
+    }
+};
+const handleDelete = async (id: number, exhibitName: string) => {
+  const res = window.confirm(`${exhibitName}을 삭제 하시겠습니까?`);
+  if (res) {
+    await deleteExhibit(id);
+    fetchUrls();
+  }
+};
+  const onClickPrev = async () => {
+    if (page > 0) {
+      setPage((p) => p - 1);
+    }
+  };
   useEffect(() => {
     fetchUrls();
-  }, []);
+  }, [page]);
+  
+  const onSearch = (e: any) => {
+ const keyword=e.target.value
+      fetchSearchExhibit(keyword);
+  };
+  const handleInActivate = async (id: number, nowActivate: boolean) => {
+    const res = window.confirm(`${nowActivate === true ? "비활성" : "활성"} 하시겠습니까?`);
+    if (res) {
+      await putActivateExhibit(id);
+      fetchUrls();
+    }
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setEditingExhibit(null);
+    fetchUrls();
+  };
+
   return (
     <div className="hospital-container">
+      {/* 기획전 추가 다이얼로그 */}
+      <Dialog open={openAddDialog}
+      fullScreen
+      >
+        <DialogTitle
+        sx={{
+          display:"flex",
+          flexDirection:"row",
+          alignItems:"center",
+          justifyContent:"space-between"
+        }}
+        >
+          <span>기획전 추가</span>
+          <IconButton
+          onClick={()=>{
+            setOpenAddDialog(false)
+          }
+          }
+          ><GrClose/></IconButton>
+          </DialogTitle>
+        <DialogContent>
+          <ExhibitRegister/>
+        </DialogContent>
+      </Dialog>
       <Typography fontSize={"18px"}>기획전 - 관리</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
@@ -134,25 +221,24 @@ export function Exhibit(props: ExhibitProps) {
             paddingBottom: "0px",
           }}
         >
-          <MainSearchBar placeholder='병원명,도시,이벤트' onSearch={()=>{}} />
-          <div className="filter-row">
-            <Typography fontSize={"16px"}>진료과</Typography>
-            <Select
-              value={""}
-              onChange={()=>{}}
-              displayEmpty
-              sx={{ height: "36px", width: "200px" }}
-            >
-              {departmentOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
-            <IOSSwitch />
-          </div>
+          <div className="exhibit-search-row">
+          <MainSearchBar placeholder='기획전명,이벤트명,도시,지역' onSearch={onSearch} />
+          <Button
+              variant='contained'
+              sx={{
+                width:"200px",
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={()=>{
+                setOpenAddDialog(true)
+              }}
+            >기획전 추가</Button>
 
+          </div>
+          
           <TableContainer
             component={Paper}
             variant='outlined'
@@ -174,12 +260,12 @@ export function Exhibit(props: ExhibitProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {exhibits && exhibits.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((exhibit, index) => (
+                {exhibits.map((exhibit, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{exhibit.name}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`${moment(exhibit.startTime).format("YYYY-MM-DD")} ~ ${moment(exhibit.endTime).format("YYYY-MM-DD")}`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`상담참여`}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{'클릭수'}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="left">{'클릭수'}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{`${exhibit.eventIds?exhibit.eventIds.length:0} 개`}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{exhibit.status?"진행 중":"만료"}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">{exhibit.exposureLocation??"-"}</TableCell>
@@ -187,7 +273,7 @@ export function Exhibit(props: ExhibitProps) {
                       onClick={() => {}}
                     ><FaPencilAlt /></IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
+                    onClick={() => handleInActivate(exhibit.id,exhibit.activated)}
                     >
                     {exhibit.activated===true?  <GiNightSleep />:
                     <GiSun
@@ -196,7 +282,9 @@ export function Exhibit(props: ExhibitProps) {
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          handleDelete(exhibit.id,exhibit.name)
+                        }}
                       ><FaTrashAlt /></IconButton>
                     </TableCell>
                   </TableRow>
@@ -204,75 +292,43 @@ export function Exhibit(props: ExhibitProps) {
               </TableBody>
             </Table>
           </TableContainer>
-          {exhibits && <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={exhibits.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={()=>{}}
-            onRowsPerPageChange={()=>{}}
-          />}
+        
+          <div className="custom-pagenation-row">
+            <Button
+              variant='outlined'
+              sx={{
+                borderColor: "#14AC2B",
+                color: "#14AC2B",
+                ":hover": {
+                  borderColor: "#14AC2B",
+                  color: "#14AC2B",
+                }
+              }}
+              onClick={onClickPrev}
+            >Prev</Button>
+            {page + 1} Page
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={onClickNext}
+            >Next</Button>
+          </div>
           {/* 수정 다이얼로그 */}
-          {/* <Dialog open={false} onClose={()=>{}}>
+          <Dialog open={false} onClose={()=>{}}>
             <DialogTitle>병원 정보 수정</DialogTitle>
             <DialogContent>
-              <TextField
-                margin="dense"
-                label="병원명"
-                fullWidth
-                value={ ''}
-                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyName: e.target.value })}
-              />
-              <TextField
-                margin="dense"
-                label="주소"
-                fullWidth
-                value={editingHospital?.dutyAddr || ''}
-                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyAddr: e.target.value })}
-                onClick={() => setOpenPostcode(true)}
-              />
-              <TextField
-                margin="dense"
-                label="진료과"
-                fullWidth
-                value={editingHospital?.dutyDivNam || ''}
-                onChange={(e) => setEditingHospital({ ...editingHospital!, dutyDivNam: e.target.value })}
-              />
-              <TextField
-                margin="dense"
-                label="태그"
-                fullWidth
-                value={editingHospital?.tags || ''}
-                onChange={(e) => setEditingHospital({ ...editingHospital!, tags: e.target.value })}
-              />
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 1 }}>
-                {(editingHospital&&editingHospital.tags)&&editingHospital?.tags.split(',').map((tag, index) => (
-                  <Chip
-                    key={index}
-                    label={tag.trim()}
-                    onDelete={() => handleDeleteTag(tag.trim())}
-                    color="primary"
-                  />
-                ))}
-              </Box>
-              {openPostcode && (
-                <Dialog open={openPostcode} onClose={() => setOpenPostcode(false)}>
-                  <DialogTitle>주소 검색</DialogTitle>
-                  <DialogContent>
-                    <DaumPostcode onComplete={handleCompletePostcode} />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenPostcode(false)} color="primary">닫기</Button>
-                  </DialogActions>
-                </Dialog>
-              )}
+             
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog} color="primary">취소</Button>
-              <Button onClick={handleSave} color="primary">저장</Button>
+              <Button onClick={()=>{}} color="primary">저장</Button>
             </DialogActions>
-          </Dialog> */}
+          </Dialog>
         </CardContent>
       </Card>
     </div>

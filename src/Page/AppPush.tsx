@@ -25,7 +25,7 @@ import {
   Chip,
   Box
 } from '@mui/material';
-import { GrDocumentCsv } from "react-icons/gr";
+import { GrClose, GrDocumentCsv } from "react-icons/gr";
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
@@ -36,6 +36,7 @@ import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
 import { getAppPushs } from '../api/apppush';
+import { AppPushCreate } from './AppPushCreate';
 
 interface AppPush {
   id: number;
@@ -110,6 +111,7 @@ export function AppPushs(props: UrlsProps) {
     const [urls, setUrls] = useState<AppPush[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openAddDialog,setOpenAddDialog]=useState(false)
   const fetchUrls = async () => {
     const res = await getAppPushs(page);
     console.log("앱푸시 조회>>>",res)
@@ -121,6 +123,30 @@ export function AppPushs(props: UrlsProps) {
   }, []);
   return (
     <div className="hospital-container">
+      {/* 앱푸시 생성 다이얼로그 */}
+      <Dialog open={openAddDialog}
+      
+      maxWidth="md"
+      >
+        <DialogTitle
+        sx={{
+          display:"flex",
+          alignItems:"center",justifyContent:"space-between"
+        }}
+        >
+          <span>앱푸시 생성</span>
+          <IconButton
+          onClick={()=>{
+            setOpenAddDialog(false)
+          }}
+          ><GrClose/></IconButton>
+        </DialogTitle>
+<DialogContent>
+<AppPushCreate/>
+
+</DialogContent>
+
+      </Dialog>
       <Typography fontSize={"18px"}>앱푸시 - 관리</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
@@ -131,8 +157,24 @@ export function AppPushs(props: UrlsProps) {
             paddingBottom: "0px",
           }}
         >
-          <MainSearchBar placeholder='병원명,도시,이벤트' onSearch={()=>{}} />
-          <div className="filter-row">
+          <div className="exhibit-search-row">
+          <MainSearchBar placeholder='캠페인명,도시,지역' onSearch={()=>{}} />
+          <Button
+              variant='contained'
+              sx={{
+                width:"200px",
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={()=>{
+                setOpenAddDialog(true)
+              }}
+            >앱푸시 생성</Button>
+          </div>
+         
+          {/* <div className="filter-row">
             <Typography fontSize={"16px"}>진료과</Typography>
             <Select
               value={""}
@@ -148,7 +190,7 @@ export function AppPushs(props: UrlsProps) {
             </Select>
             <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
             <IOSSwitch />
-          </div>
+          </div> */}
 
           <TableContainer
             component={Paper}

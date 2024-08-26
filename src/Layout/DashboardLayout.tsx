@@ -65,7 +65,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
               <ul>
                 <li className={`${location.pathname === "/url-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/url-create")}>URL 생성</li>
                 <li className={`${location.pathname === "/urls" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/urls")}>URL 정보</li>
-                <li className={`${location.pathname === "/exhibit-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/exhibit-create")}>기획전 생성</li>
+                {/* <li className={`${location.pathname === "/exhibit-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/exhibit-create")}>기획전 생성</li> */}
                 <li className={`${location.pathname === "/exhibit" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/exhibit")}>기획전 관리</li>
                 <li className={`${location.pathname === "/apppush-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/apppush-create")}>앱푸시 생성</li>
                 <li className={`${location.pathname === "/apppushs" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/apppushs")}>앱푸시 관리</li>
