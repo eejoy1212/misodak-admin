@@ -121,26 +121,28 @@ export function Hospital(props: HospitalProps) {
   const [openPostcode, setOpenPostcode] = useState(false);
 
   const handleEditClick = (hospital: Hospital) => {
-    setEditingHospital(hospital);
+    const matchingDiv = departmentOptions.filter(op => op.label === hospital.dutyDivNam)[0].value;
+    const formattedHospital = { ...hospital, dutyDivNam: matchingDiv };
+    setEditingHospital(formattedHospital);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingHospital(null);
-    window.location.reload();
+    fetchHospital();
   };
 
   const handleSave = async () => {
     if (editingHospital) {
       await putEditHospital(
-        editingHospital.id, 
-        editingHospital?.dutyName, 
-        editingHospital?.city, 
-        editingHospital?.location, 
-        editingHospital?.dutyAddr, 
-        "CLINIC", 
-        editingHospital.tags, 
+        editingHospital.id,
+        editingHospital?.dutyName,
+        editingHospital?.city,
+        editingHospital?.location,
+        editingHospital?.dutyAddr,
+        editingHospital.dutyDivNam,
+        editingHospital.tags,
         editingHospital?.dutyInf
       );
     }
@@ -148,9 +150,13 @@ export function Hospital(props: HospitalProps) {
   };
 
   const handleCompletePostcode = (data: any) => {
+    const parsedAddress = parseAddress(data.address);
+    console.log("parse city region>>>",parsedAddress,data)
     setEditingHospital({
       ...editingHospital!,
       dutyAddr: data.address,
+      city: data.sido || '',
+      location: data.sigungu || ''
     });
     setOpenPostcode(false);
   };
@@ -164,7 +170,7 @@ export function Hospital(props: HospitalProps) {
     }
 
     const timeout = setTimeout(async () => {
-      await searchHospitals(value, { page: 1, size: rowsPerPage, sort: 'dutyName' })
+      await searchHospitals(value, page)
         .then(res => setHospitals(res))
         .catch(error => console.error("병원 검색 오류:", error));
     }, 1000);
@@ -173,17 +179,13 @@ export function Hospital(props: HospitalProps) {
   };
 
   const fetchHospital = async () => {
-    const res = await getHospital(1);
+    const res = await getHospital(page);
     setHospitals(res);
   };
 
-  useEffect(() => {
-    fetchHospital();
-  }, []);
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-    searchHospitals(searchTerm, { page: newPage, size: rowsPerPage, sort: 'dutyName' })
+    searchHospitals(searchTerm, page)
       .then(res => setHospitals(res.content))
       .catch(error => console.error("페이지 변경 오류:", error));
   };
@@ -192,20 +194,17 @@ export function Hospital(props: HospitalProps) {
     const newSize = parseInt(event.target.value, 10);
     setRowsPerPage(newSize);
     setPage(0);
-    searchHospitals(searchTerm, { page: 0, size: newSize, sort: 'dutyName' })
+    searchHospitals(searchTerm, page)
       .then(res => setHospitals(res.content))
       .catch(error => console.error("페이지 크기 변경 오류:", error));
   };
 
-  const handleInActivate = async (id: number,nowActivate:boolean) => {
-    console.log("active>>>",nowActivate)
-    const res = window.confirm(`${nowActivate===true?"비활성":"활성"} 하시겠습니까?`);
+  const handleInActivate = async (id: number, nowActivate: boolean) => {
+    const res = window.confirm(`${nowActivate === true ? "비활성" : "활성"} 하시겠습니까?`);
     if (res) {
       await putActivateHospital(id);
       fetchHospital();
-       window.location.reload() 
-      }
-
+    }
   };
 
   const handleDelete = async (id: number, hospitalName: string) => {
@@ -231,7 +230,6 @@ export function Hospital(props: HospitalProps) {
     setSelectedDepartment(e.target.value);
   };
 
-  // 태그 삭제 핸들러
   const handleDeleteTag = (tagToDelete: string) => {
     const updatedTags = editingHospital?.tags
       .split(',')
@@ -248,7 +246,24 @@ export function Hospital(props: HospitalProps) {
       return prev;
     });
   };
-console.log(hospitals)
+
+  const onClickNext = async () => {
+    const rowsLength = hospitals.length;
+    if (rowsLength === rowsPerPage) {
+      setPage((p) => p + 1);
+    }
+  };
+
+  const onClickPrev = async () => {
+    if (page > 0) {
+      setPage((p) => p - 1);
+    }
+  };
+
+  useEffect(() => {
+    fetchHospital();
+  }, [page]);
+console.log("병원정보>>>",hospitals)
   return (
     <div className="hospital-container">
       <Typography fontSize={"18px"}>병원정보 - 조회</Typography>
@@ -301,7 +316,7 @@ console.log(hospitals)
                 </TableRow>
               </TableHead>
               <TableBody>
-                {hospitals && hospitals.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((hospital, index) => (
+                {hospitals.map((hospital, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{hospital.dutyName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{parseAddress(hospital.dutyAddr)?.city}</TableCell>
@@ -331,16 +346,33 @@ console.log(hospitals)
               </TableBody>
             </Table>
           </TableContainer>
-          {hospitals && <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={hospitals.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />}
-          {/* 수정 다이얼로그 */}
+
+          <div className="custom-pagenation-row">
+            <Button
+              variant='outlined'
+              sx={{
+                borderColor: "#14AC2B",
+                color: "#14AC2B",
+                ":hover": {
+                  borderColor: "#14AC2B",
+                  color: "#14AC2B",
+                }
+              }}
+              onClick={onClickPrev}
+            >Prev</Button>
+            {page + 1} Page
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={onClickNext}
+            >Next</Button>
+          </div>
+
           <Dialog open={openDialog} onClose={handleCloseDialog}>
             <DialogTitle>병원 정보 수정</DialogTitle>
             <DialogContent>
@@ -359,13 +391,19 @@ console.log(hospitals)
                 onChange={(e) => setEditingHospital({ ...editingHospital!, dutyAddr: e.target.value })}
                 onClick={() => setOpenPostcode(true)}
               />
-              <TextField
+              <Select
                 margin="dense"
                 label="진료과"
                 fullWidth
                 value={editingHospital?.dutyDivNam || ''}
                 onChange={(e) => setEditingHospital({ ...editingHospital!, dutyDivNam: e.target.value })}
-              />
+              >
+                {departmentOptions.slice(1).map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
               <TextField
                 margin="dense"
                 label="태그"
@@ -374,7 +412,7 @@ console.log(hospitals)
                 onChange={(e) => setEditingHospital({ ...editingHospital!, tags: e.target.value })}
               />
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 1 }}>
-                {(editingHospital&&editingHospital.tags)&&editingHospital?.tags.split(',').map((tag, index) => (
+                {(editingHospital && editingHospital.tags) && editingHospital?.tags.split(',').map((tag, index) => (
                   <Chip
                     key={index}
                     label={tag.trim()}

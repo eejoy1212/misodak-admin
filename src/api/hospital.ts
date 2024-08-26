@@ -26,10 +26,11 @@ export const getDepHospital = async (category: string) => {
 //   return data;
 // };
 // 병원을 검색하는 함수
-export const searchHospitals = async (keyword: string, pageable: { page: number; size: number; sort: string }) => {
-  console.log("pageable>>>",pageable)
-   const url = `/v1/search?keyword=${encodeURIComponent(keyword)}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`
-  const { data } = await axiosInstance.get(url);
+export const searchHospitals = async (keyword: string, page:number) => {
+ 
+   const url = `/v1/admin/hospital/search/${page}?keyword=${keyword}`
+ console.log("search hospital>>>",url)  
+ const { data } = await axiosInstance.get(url);
   console.log("search>>>",data)
   return data;
 };
@@ -59,7 +60,7 @@ export const putEditHospital = async (id: number,dutyName:string,city:string,loc
     dutyAddr,
     dutyDivNam,
     tags,
-    dutyInf
+    dutyInf:""
   });
   
   return data;
@@ -87,6 +88,7 @@ export const postRegisterHospital = async (dutyName:string, city:string, locatio
 };
 // 병원을 삭제하는 함수
 export const deleteHospital = async (id: number) => {
+  console.log("Delete 병원>>>",id)
   const { data } = await axiosInstance.delete(`/v1/admin/hospital/${id}`);
   return data;
 };
