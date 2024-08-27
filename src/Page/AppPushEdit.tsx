@@ -3,11 +3,13 @@ import * as React from 'react';
 import './AppPushCreate.css'
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { postCreateAppPushs } from '../api/apppush';
+import { AppPush } from './AppPush';
 export interface IAppPushCreateProps {
   onClose:()=>void
+  editing:AppPush
 }
 
-export function AppPushCreate ({onClose}: IAppPushCreateProps) {
+export function AppPushEdit ({onClose,editing}: IAppPushCreateProps) {
   const [campaignName,setCampainName]=React.useState<string>("")
   const [filter,setFilter]=React.useState<string>("")
   const [segemnt,setSegment]=React.useState<string>("")
@@ -15,7 +17,16 @@ export function AppPushCreate ({onClose}: IAppPushCreateProps) {
   const [body,setBody]=React.useState<string>("")
   const [location,setLocation]=React.useState<string>("")
   const [city,setCity]=React.useState<string>("")
-  const handleCreateAppPush=async()=>{
+  React.useEffect(()=>{
+    setCampainName(editing.campaignName)
+    setFilter(editing.filter)
+    setSegment(editing.segment)
+    setTitle(editing.title)
+    setBody(editing.body)
+    setLocation(editing.location)
+    setCity(editing.city)
+  },[])
+  const handleEditAppPush=async()=>{
     if (campaignName.trim()===""||
   filter.trim()===""||
   title.trim()===""||
@@ -145,8 +156,8 @@ city
                                     width:"160px",  
                                     }
                                  }}
-                                 onClick={handleCreateAppPush}
-                                >앱푸시 생성</Button>
+                                 onClick={handleEditAppPush}
+                                >앱푸시 수정</Button>
                                 </div>
         {/* </CardContent>
       </Card> */}

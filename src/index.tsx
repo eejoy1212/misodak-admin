@@ -72,11 +72,11 @@ const router = createBrowserRouter(
   path: "/exhibit",
   element: <Exhibit/>
 },
-{
+// {
       
-  path: "/apppush-create",
-  element: <AppPushCreate/>
-},
+//   path: "/apppush-create",
+//   element: <AppPushCreate/>
+// },
 {
       
   path: "/apppushs",

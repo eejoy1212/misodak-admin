@@ -23,7 +23,8 @@ import {
   TextField,
   DialogActions,
   Chip,
-  Box
+  Box,
+  CircularProgress
 } from '@mui/material';
 import { GrClose, GrDocumentCsv } from "react-icons/gr";
 import './Hospital.css';
@@ -35,10 +36,13 @@ import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
-import { getAppPushs } from '../api/apppush';
+import { deleteAppPush, getAppPushs, putActivateAppPush, putSendAppPush, searchGetAppPushs } from '../api/apppush';
 import { AppPushCreate } from './AppPushCreate';
+import { AppPushEdit } from './AppPushEdit';
+import { RiMailSendFill } from 'react-icons/ri';
+import { MdCheckCircle } from 'react-icons/md';
 
-interface AppPush {
+export interface AppPush {
   id: number;
   campaignName:string;
 status:string;
@@ -48,6 +52,9 @@ sendAt:string;
 segment:string;
 city:string;
 location:string;
+filter:string;
+title:string;
+body:string;
 }
 
 export interface UrlsProps { }
@@ -110,8 +117,11 @@ export function AppPushs(props: UrlsProps) {
     const headerTxtColor = "#333333";
     const [urls, setUrls] = useState<AppPush[]>([]);
   const [page, setPage] = useState(0);
+  const [editingAppPush,setEditingAppPush]=useState<AppPush|null>(null)
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openAddDialog,setOpenAddDialog]=useState(false)
+  const [openEditDialog,setOpenEditDialog]=useState(false)
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const fetchUrls = async () => {
     const res = await getAppPushs(page);
     console.log("앱푸시 조회>>>",res)
@@ -120,12 +130,82 @@ export function AppPushs(props: UrlsProps) {
 
   useEffect(() => {
     fetchUrls();
-  }, []);
+  }, [page]);
+  useEffect(() => {
+    if (!openAddDialog) {
+    fetchUrls();
+      
+    }
+  }, [openAddDialog]);
+  const onCloseAdd=()=>{
+    setOpenAddDialog(false)
+  }
+  const onCloseEdit=()=>{
+    setOpenEditDialog(false)
+  }
+  const onClickNext = async () => {
+    const nextPage = page + 1;
+    
+    // 다음 페이지 데이터를 가져와서 확인
+    const res = await getAppPushs(nextPage);
+
+    // 다음 페이지 데이터가 없으면 페이지를 증가시키지 않음
+    if (res.length > 0) {
+        setUrls(res);
+        setPage(nextPage);
+    } else {
+        console.log("더 이상 페이지가 없습니다.");
+    }
+};
+const onClickPrev = async () => {
+  if (page > 0) {
+    setPage((p) => p - 1);
+  }
+};
+const handleDelete = async (id: number, name: string) => {
+  const res = window.confirm(`${name}을 삭제 하시겠습니까?`);
+  if (res) {
+    await deleteAppPush(id);
+    fetchUrls();
+  }
+};
+const handleInActivate = async (id: number, nowActivate: boolean) => {
+  const res = window.confirm(`${nowActivate === true ? "비활성" : "활성"} 하시겠습니까?`);
+  if (res) {
+    await putActivateAppPush(id);
+    fetchUrls();
+  }
+};
+const fetchSearchExhibit = async (keyword: string) => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+  const timeOut=setTimeout(async()=>{
+    await searchGetAppPushs(page,keyword)
+    .then(res=>setUrls(res))
+    .catch(err=>console.log("앱푸시 검색 오류:",err))
+  },1000)
+  setSearchTimeout(timeOut);
+};
+const onSearch = (e: any) => {
+  const keyword=e.target.value
+       fetchSearchExhibit(keyword);
+   };
+   const onSendAppPush=async(id:number)=>{
+    const res=window.confirm("발송하시겠습니까? ")
+    if (res) {
+        await  putSendAppPush(id)
+        fetchUrls()
+    }else{
+
+    }
+
+   }
   return (
     <div className="hospital-container">
       {/* 앱푸시 생성 다이얼로그 */}
       <Dialog open={openAddDialog}
-      
+      onClose={onCloseAdd}
       maxWidth="md"
       >
         <DialogTitle
@@ -142,11 +222,12 @@ export function AppPushs(props: UrlsProps) {
           ><GrClose/></IconButton>
         </DialogTitle>
 <DialogContent>
-<AppPushCreate/>
+<AppPushCreate onClose={onCloseAdd}/>
 
 </DialogContent>
 
       </Dialog>
+
       <Typography fontSize={"18px"}>앱푸시 - 관리</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
@@ -158,7 +239,7 @@ export function AppPushs(props: UrlsProps) {
           }}
         >
           <div className="exhibit-search-row">
-          <MainSearchBar placeholder='캠페인명,도시,지역' onSearch={()=>{}} />
+          <MainSearchBar placeholder='캠페인명,도시,지역' onSearch={onSearch} />
           <Button
               variant='contained'
               sx={{
@@ -208,13 +289,13 @@ export function AppPushs(props: UrlsProps) {
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">지역</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">발송일시</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">완료</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">발송</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
+                {urls.map((url, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{url.campaignName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{url.segment}</TableCell>
@@ -226,10 +307,15 @@ export function AppPushs(props: UrlsProps) {
                     <TableCell sx={{ color: headerTxtColor }} align="center">{'완료'}</TableCell>
                    
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
-                    ><FaPencilAlt /></IconButton></TableCell>
+                      onClick={() => {
+                        onSendAppPush(url.id)  }}
+                    >{url.sendAt?<MdCheckCircle/>:<RiMailSendFill 
+                    
+                    />}</IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleInActivate(url.id,url.activated)
+                      }}
                     >
                     {url.activated===true?  <GiNightSleep />:
                     <GiSun
@@ -238,7 +324,9 @@ export function AppPushs(props: UrlsProps) {
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          handleDelete(url.id,url.campaignName)
+                        }}
                       ><FaTrashAlt /></IconButton>
                     </TableCell>
                   </TableRow>
@@ -246,15 +334,33 @@ export function AppPushs(props: UrlsProps) {
               </TableBody>
             </Table>
           </TableContainer>
-          {urls && <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={urls.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={()=>{}}
-            onRowsPerPageChange={()=>{}}
-          />}
+         
+          <div className="custom-pagenation-row">
+            <Button
+              variant='outlined'
+              sx={{
+                borderColor: "#14AC2B",
+                color: "#14AC2B",
+                ":hover": {
+                  borderColor: "#14AC2B",
+                  color: "#14AC2B",
+                }
+              }}
+              onClick={onClickPrev}
+            >Prev</Button>
+            {page + 1} Page
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={onClickNext}
+            >Next</Button>
+          </div>
+
           {/* 수정 다이얼로그 */}
           {/* <Dialog open={false} onClose={()=>{}}>
             <DialogTitle>병원 정보 수정</DialogTitle>
