@@ -35,7 +35,7 @@ import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
 import { departmentOptions, parseAddress } from '../const/const';
-import { getEvents } from '../api/event';
+import { downloadCsvGetEvent, getEvents, searchGetEvents } from '../api/event';
 import moment from 'moment';
 
 interface Urls {
@@ -110,6 +110,7 @@ export function Urls(props: UrlsProps) {
     const [urls, setUrls] = useState<Urls[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const fetchUrls = async () => {
     const res = await getEvents(page);
     console.log("이벤트 조회>>>",res)
@@ -119,6 +120,61 @@ export function Urls(props: UrlsProps) {
   useEffect(() => {
     fetchUrls();
   }, []);
+  const fetchSearchEvents = async (keyword: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    const timeOut=setTimeout(async()=>{
+      await searchGetEvents(page,keyword)
+      .then(res=>setUrls(res))
+      .catch(err=>console.log("이벤트 검색 오류:",err))
+    },1000)
+    setSearchTimeout(timeOut);
+  };
+  const onSearch = (e: any) => {
+    const keyword=e.target.value
+         fetchSearchEvents(keyword);
+     };
+     const fetchDownloadCsv = async () => {
+      try {
+        const response = await downloadCsvGetEvent();
+        console.log("Response headers>>>", response.headers);
+    
+        // 응답 헤더에서 파일 이름 가져오기
+        const contentDisposition = response.headers['content-disposition'];
+        let fileName = 'download.csv';
+    
+        if (contentDisposition) {
+          // filename*="UTF-8''file.csv"와 같은 형식으로 오는 경우 처리
+          const utf8FileNameMatch = contentDisposition.match(/filename\*=(?:UTF-8'')?([^;]+)/);
+          if (utf8FileNameMatch && utf8FileNameMatch[1]) {
+            fileName = decodeURIComponent(utf8FileNameMatch[1].replace(/"/g, ''));
+          } else {
+            // filename="file.csv"와 같은 형식으로 오는 경우 처리
+            const fileNameMatch = contentDisposition.match(/filename="(.+?)"/);
+            if (fileNameMatch && fileNameMatch[1]) {
+              fileName = fileNameMatch[1];
+            }
+          }
+        }
+    
+        console.log("Final file name>>>", fileName);
+    
+        // Blob 생성 및 파일 다운로드
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('CSV 다운로드 중 오류가 발생했습니다:', error);
+      }
+    };
+  
   return (
     <div className="hospital-container">
       <Typography fontSize={"18px"}>이벤트정보 - 조회</Typography>
@@ -131,23 +187,34 @@ export function Urls(props: UrlsProps) {
             paddingBottom: "0px",
           }}
         >
-          <MainSearchBar placeholder='병원명,도시,이벤트' onSearch={()=>{}} />
+                  
+          <MainSearchBar placeholder='이벤트명,병원명,도시,지역' onSearch={onSearch} />
           <div className="filter-row">
-            <Typography fontSize={"16px"}>진료과</Typography>
-            <Select
-              value={""}
-              onChange={()=>{}}
-              displayEmpty
-              sx={{ height: "36px", width: "200px" }}
-            >
-              {departmentOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
-            <IOSSwitch />
+          <Button
+              variant='contained'
+              sx={{height:"36px",
+                width:"200px",
+                backgroundColor: "#14AC2B",
+                ":hover": {
+                  backgroundColor: "#14AC2B"
+                }
+              }}
+              onClick={()=>{
+              }}
+            >URL 생성</Button> <Button
+            variant='contained'
+            sx={{height:"36px",
+              width:"200px",
+              backgroundColor: "#14AC2B",
+              ":hover": {
+                backgroundColor: "#14AC2B"
+              }
+            }}
+            onClick={fetchDownloadCsv}
+          >
+            {/* <GrDocumentCsv size={25}/> */}
+          <span>CSV 전체 다운로드</span>
+          </Button>
           </div>
 
           <TableContainer

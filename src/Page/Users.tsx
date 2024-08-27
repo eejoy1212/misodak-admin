@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -19,14 +19,16 @@ import {
   DialogContent,
   TextField,
   DialogActions,
+  TextareaAutosize,
 } from '@mui/material';
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import moment from 'moment';
-import { getUsers } from '../api/user';
+import { deleteUser, getUsers, putActivateUser, putEditUser, searchGetUsers } from '../api/user';
 import './Users.css';
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { MainSearchBar } from '../Component/MainSearchBar';
+import { GrClose } from 'react-icons/gr';
 
 interface User {
   id: number;
@@ -40,6 +42,7 @@ interface User {
   boardCount: string;
   commentCount: string;
   activated: boolean;
+  memo:string;
 }
 interface UserProps {
 
@@ -52,7 +55,7 @@ export function Users(props: UserProps) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openEdit, setOpenEdit] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
-
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const fetchUrls = async () => {
     try {
       const res = await getUsers(page);
@@ -98,7 +101,80 @@ export function Users(props: UserProps) {
       setPage((p) => p - 1);
     }
   };
+  const fetchSearchUsers = async (keyword: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    const timeOut=setTimeout(async()=>{
+      await searchGetUsers(page,keyword)
+      .then(res=>setUsers(res))
+      .catch(err=>console.log("유저 검색 오류:",err))
+    },1000)
+    setSearchTimeout(timeOut);
+  };
+  const onSearch = (e: any) => {
+    const keyword=e.target.value
+         fetchSearchUsers(keyword);
+     };
+     const handleInActivate = async (id: number, nowActivate: boolean) => {
+      const res = window.confirm(`${nowActivate === true ? "비활성" : "활성"} 하시겠습니까?`);
+      if (res) {
+        await putActivateUser(id);
+        fetchUrls();
+      }
+    };
+    const handleDelete = async (id: number, name: string) => {
+      const password = prompt('관리자 비밀번호를 입력하세요:');
+      if (password) {
+        const res = window.confirm(`${name}을 삭제 하시겠습니까?`);
+        if (res) {
+          await deleteUser(id, password);
+          fetchUrls();
+        }
+      } else {
+        alert('비밀번호가 입력되지 않았습니다.');
+      }
+    };
 
+    const onEditUser=async()=>{try {
+ 
+      if (selected) {
+               const newSelected={
+                id:selected.id,
+                registerTime:selected.registerTime,
+                nickname:selected.nickname,
+                phone:selected.phone,
+                email:selected.email,
+                activated:selected.activated,
+                memo:selected.memo
+              }
+                  // 현재 시간을 기준으로 변환
+const formattedDateStr = moment(selected.registerTime).set({
+  hour: moment().hour(),
+  minute: moment().minute(),
+  second: moment().second(),
+  millisecond: moment().millisecond()
+}).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+         console.log("selected>>>",newSelected) 
+          await putEditUser(    selected.id,
+            formattedDateStr,
+            selected.nickname,
+            selected.phone,
+            selected.email,
+           selected.activated,
+            selected.memo)
+      window.confirm("수정을 성공적으로 완료했습니다.")
+      onClose()
+      } else {
+      
+      }
+ 
+      fetchUrls()
+    } catch (error) {
+      window.confirm(`수정을 실패했습니다:${error}`)
+    }
+      
+    } 
   return (
     <div className="hospital-container">
       <Card variant="outlined" sx={{ height: "100%" }}>
@@ -112,7 +188,7 @@ export function Users(props: UserProps) {
         >
       <Typography fontSize={"18px"}>유저 조회</Typography>
 
-          <MainSearchBar placeholder='유저명, 닉네임' onSearch={() => { }} />
+          <MainSearchBar placeholder='이름,닉네임,연락처,이메일,관심지역' onSearch={onSearch} />
 
           <TableContainer
             component={Paper}
@@ -161,7 +237,9 @@ export function Users(props: UserProps) {
                     </TableCell>
 
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => { }}
+                      onClick={() => { 
+                        handleInActivate(user.id,user.activated)
+                      }}
                     >
                       {user.activated === true ? <GiNightSleep /> :
                         <GiSun
@@ -170,7 +248,9 @@ export function Users(props: UserProps) {
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
-                        onClick={() => { }}
+                        onClick={() => {
+                          handleDelete(user.id,user.name)
+                         }}
                       ><FaTrashAlt /></IconButton>
                     </TableCell>
                   </TableRow>
@@ -206,17 +286,30 @@ export function Users(props: UserProps) {
           </div>
 
           {/* 수정 다이얼로그 */}
-          <Dialog open={openEdit} onClose={onClose}>
+          <Dialog 
+// maxWidth="sm"
+fullWidth
+open={openEdit} onClose={onClose}>
+      <DialogTitle
+              sx={{
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"space-between"
+              }}
+              >
+                <span>유저 수정</span>
+                <IconButton><GrClose/></IconButton>
+                </DialogTitle>
             <DialogContent
               sx={{
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "row",
                 alignItems: "center"
               }}
             >
-              <DialogTitle>유저 수정</DialogTitle>
-
-              <div className="user-edit-row">
+          
+<div className="user-edit-left">
+<div className="user-edit-row">
                 <div className="user-edit-title">
                   가입일
                 </div>
@@ -231,9 +324,8 @@ export function Users(props: UserProps) {
                   fullWidth
                 />
               </div>
-
-              {/* 다른 필드들도 비슷하게 추가 가능합니다. 예시: */}
-              <div className="user-edit-row">
+                {/* 다른 필드들도 비슷하게 추가 가능합니다. 예시: */}
+                <div className="user-edit-row">
                 <div className="user-edit-title">
                   이름
                 </div>
@@ -296,6 +388,7 @@ export function Users(props: UserProps) {
                   value={selected?.eventCount ?? ''}
                   onChange={(e) => handleFieldChange('eventCount', e.target.value)}
                 />
+                
               </div>
               <div className="user-edit-row">
                 <div className="user-edit-title">
@@ -305,6 +398,7 @@ export function Users(props: UserProps) {
                   value={selected?.boardCount ?? ''}
                   onChange={(e) => handleFieldChange('boardCount', e.target.value)}
                 />
+                 
               </div>
               <div className="user-edit-row">
                 <div className="user-edit-title">
@@ -315,11 +409,57 @@ export function Users(props: UserProps) {
                   onChange={(e) => handleFieldChange('commentCount', e.target.value)}
                 />
               </div>
+              <div className="user-edit-row">
+                <div className="user-edit-title">
+                  메모
+                </div>
+                <HospitalRegisterTxtfield
+                  value={selected?.memo ?? ''}
+                  onChange={(e) => handleFieldChange('memo', e.target.value)}
+                />
+             
+              </div>
+          
+</div>
+{/* <div
+              className='edit-v-divider'
+              />
+<div className="user-edit-right">
+  <div className="edit-tabview">
+    
+  </div>
+</div> */}
+            
 
             </DialogContent>
             <DialogActions>
-              <Button onClick={onClose} color="primary">취소</Button>
-              <Button onClick={() => { /* 유저 저장 로직 추가 */ }} color="primary">저장</Button>
+            <Button
+                                variant='outlined'
+                                sx={{
+                                    marginLeft:"140px",
+                                    width:"100px",
+                                    borderColor:"black",
+                                    color:"black",
+                                    ":hover":{
+                                        width:"100px",
+                                        borderColor:"black",
+                                        color:"black",  
+                                    }
+                                }}
+                                onClick={onClose}
+                                >취소</Button>
+                                <Button
+                                 variant='contained'
+                                 sx={{
+                                    backgroundColor:"#31873E",
+                                    width:"100px",
+                                    ":hover":{
+                                        backgroundColor:"#31873E",
+                                    width:"100px",  
+                                    }
+                                 }}
+                                 onClick={onEditUser}
+                                >저장</Button>
             </DialogActions>
           </Dialog>
         </CardContent>

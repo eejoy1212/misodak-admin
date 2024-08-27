@@ -8,3 +8,14 @@
     height: 60px;
     align-items: center;
 }
+.user-edit-left{
+    width: 100% ;
+    /* background-color: red; */
+    display: flex;
+    flex-direction: column;
+}
+.edit-v-divider{
+    height:600px;
+    width: 1px;
+    background-color: #d9d9d9;
+}

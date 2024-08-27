@@ -40,11 +40,11 @@ export function DashboardLayout(props: DashboardLayoutProps) {
               <MdDashboard size={"20px"} color={`${openTab === null && getSelected("/") ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
               <strong style={{ color: `${openTab === null && getSelected("/") ? "#14AC2B" : "#999999"}` }}>Dashboard</strong>
             </li>
-            <li className="menu" >
+            {/* <li className="menu" >
               <div className={`indicator ${getSelected("/noti") ? "" : "opacity"}`} />
               <MdNotificationsNone size={"20px"} color={`${getSelected("/noti") ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
               <strong style={{ color: `${getSelected("/noti") ? "#14AC2B" : "#999999"}` }}>Notification</strong>
-            </li>
+            </li> */}
             <li className={`menu ${openTab === "info" ? "select" : ""}`} onClick={() => handleTabClick("info")}>
               <div className={`indicator ${openTab === "info" ? "" : "opacity"}`} />
               <MdOutlineEventNote size={"20px"} color={`${openTab === "info" ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
