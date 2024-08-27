@@ -32,3 +32,15 @@ export const deleteExhibit = async (id: number) => {
   const { data } = await axiosInstance.delete(`/v1/admin/exhibition/${id}`);
   return data;
 };
+//기획전 추가
+export const postAddExhibit=async(formData:any)=>{
+  console.log("form Data>>>",formData)
+  const { data } = await axiosInstance.post('/v1/admin/exhibition', 
+    formData,
+    {
+  headers: {
+      'Content-Type': 'multipart/form-data'
+  }
+  });
+  return { data };
+}

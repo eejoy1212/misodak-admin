@@ -4,6 +4,7 @@ import ImgContainer from '../images/thumbnail.png';
 import './ExhibitRegister.css'
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { MainSearchBar } from '../Component/MainSearchBar';
+import { postAddExhibit } from '../api/exhibit';
 
 export interface IExhibitRegisterProps {}
 
@@ -44,7 +45,8 @@ export function ExhibitRegister(props: IExhibitRegisterProps) {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit =async () => {
+        console.log("이벤트 생성")
         const newExhibit = {
             thumbnail: selectedFileThumbnail ? selectedFileThumbnail.name : "",
             detail: selectedFileDetail ? selectedFileDetail.name : "",
@@ -69,19 +71,11 @@ export function ExhibitRegister(props: IExhibitRegisterProps) {
             formData.append('detail', selectedFileDetail);
         }
         formData.append('data', JSON.stringify(newExhibit.data));
-
-        // API 요청을 보냄
-        fetch('/v1/admin/exhibition', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+// FormData에 데이터가 추가된 후에 출력
+formData.forEach((value, key) => {
+    console.log(key, value);
+});
+       await postAddExhibit(formData)
     };
 
     return (
