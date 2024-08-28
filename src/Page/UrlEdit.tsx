@@ -5,14 +5,14 @@ import ImgContainer from '../images/img-container.png';
 import { Button, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { MisodakCheckbox } from '../Component/MisodakCheckbox';
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
-import { postCreateEvent } from '../api/event';
+import { postCreateEvent, putUpdateEvent } from '../api/event';
 import { appColor1 } from '../const/const';
 
-export interface UrlRegisterProps {
-   
+export interface UrlEditProps {
+    editing:any
 }
 
-export function UrlRegister(props: UrlRegisterProps) {
+export function UrlEdit({editing}: UrlEditProps) {
     const [selectedThumbnailImage, setSelectedThumbnailImage] = React.useState<File | null>(null);
     const [selectedDetailImage, setSelectedDetailImage] = React.useState<File | null>(null);
     const [url, setUrl] = React.useState<string>("");
@@ -21,7 +21,9 @@ export function UrlRegister(props: UrlRegisterProps) {
     const [startDate, setStartDate] = React.useState<string>("");
     const [endDate, setEndDate] = React.useState<string>("");
     const [eventFooter, setEventFooter] = React.useState<string>("");
-
+React.useEffect(()=>{
+    console.log("editing>>>",editing)
+},[])
     const handleThumbUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             setSelectedThumbnailImage(event.target.files[0]);
@@ -38,10 +40,11 @@ export function UrlRegister(props: UrlRegisterProps) {
     const onEventCreate = async () => {
         try {
             const eventData = {
+                eventId:15,
                 hospitalId: 10, // 병원 ID (실제 값으로 변경)
-                eventName: eventName,
-                eventCost: "10000", // 이벤트 비용 (실제 값으로 변경)
-                eventDescription: "이벤트 설명", // 이벤트 설명 (실제 값으로 변경)
+                eventName: "testeventName",
+                // eventCost: "10000", // 이벤트 비용 (실제 값으로 변경)
+                // eventDescription: "이벤트 설명", // 이벤트 설명 (실제 값으로 변경)
                 startAt: "2024-08-29T06:10:58.218Z",
                 endAt: "2024-08-30T06:10:58.218Z",
             };
@@ -51,10 +54,10 @@ export function UrlRegister(props: UrlRegisterProps) {
                 image: selectedThumbnailImage,
             };
 
-            const response = await postCreateEvent(content);
-            console.log('이벤트 생성 성공:', response);
+            const response = await putUpdateEvent(content);
+            console.log('이벤트 수정 성공:', response);
         } catch (error) {
-            console.error('이벤트 생성 실패:', error);
+            console.error('이벤트 수정 실패:', error);
         }
     };
 
@@ -259,19 +262,7 @@ export function UrlRegister(props: UrlRegisterProps) {
                             <div className='btns-row'
                          
                             >
-                                <Button
-                                    variant='outlined'
-                                    sx={{
-                                        width:"160px",
-                                        borderColor:"black",
-                                        color:"black",
-                                        ":hover":{
-                                            width:"160px",
-                                            borderColor:"black",
-                                            color:"black",  
-                                        }
-                                    }}
-                                >취소</Button>
+               
                                 <Button
                                     variant='contained'
                                     sx={{

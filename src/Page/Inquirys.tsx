@@ -31,12 +31,9 @@ import { MainSearchBar } from '../Component/MainSearchBar';
 import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
-import { searchHospitals } from '../api/hospital';
-import DaumPostcode from 'react-daum-postcode';
-import { departmentOptions, parseAddress } from '../const/const';
-import { getEvents } from '../api/event';
 import moment from 'moment';
-import { getInquiries } from '../api/inquiry';
+import { getInquiries, searchGetInquiries } from '../api/inquiry';
+import { appColor1, appColor2 } from '../const/const';
 
 interface Inquiry {
   id: number;
@@ -46,7 +43,8 @@ interface Inquiry {
   nickname:string;
   phone:string;
   email:string;
-  registerTime:string;
+  registerDate:string;
+  updateDate:string;
   status:string;
   eventCount:string;
   boardCount:string;
@@ -110,20 +108,53 @@ const IOSSwitch = styled((props: SwitchProps) => (
 }));
 
 export function Inquirys(props: InquiryProps) {
-    const headerColor = "#F0FBEB";
+    const headerColor =appColor2;
     const headerTxtColor = "#333333";
     const [inquirys, setInquirys] = useState<Inquiry[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const fetchUrls = async () => {
     const res = await getInquiries(page);
     console.log("문의내역 조회>>>",res)
     setInquirys(res);
   };
-
+  const onClickNext = async () => {
+    const nextPage = page + 1;
+    
+    // 다음 페이지 데이터를 가져와서 확인
+    const res = await getInquiries(nextPage);
+    // 다음 페이지 데이터가 없으면 페이지를 증가시키지 않음
+    if (res.length > 0) {
+      setInquirys(res);
+        setPage(nextPage);
+    } else {
+        console.log("더 이상 페이지가 없습니다.");
+    }
+};
+const onClickPrev = async () => {
+  if (page > 0) {
+    setPage((p) => p - 1);
+  }
+};
   useEffect(() => {
     fetchUrls();
-  }, []);
+  }, [page]);
+  const fetchSearchInquiries = async (keyword: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    const timeOut=setTimeout(async()=>{
+      await searchGetInquiries(page,keyword)
+      .then(res=>setInquirys(res))
+      .catch(err=>console.log("앱푸시 검색 오류:",err))
+    },1000)
+    setSearchTimeout(timeOut);
+  };
+  const onSearch = (e: any) => {
+    const keyword=e.target.value
+         fetchSearchInquiries(keyword);
+     };
   return (
     <div className="hospital-container">
       <Typography fontSize={"18px"}>1:1 문의내역</Typography>
@@ -136,13 +167,13 @@ export function Inquirys(props: InquiryProps) {
             paddingBottom: "0px",
           }}
         >
-          {/* <MainSearchBar placeholder='유저명, 닉네임' onSearch={()=>{}} /> */}
+          <MainSearchBar placeholder='유저명, 문의글' onSearch={onSearch} />
          
 
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -150,51 +181,52 @@ export function Inquirys(props: InquiryProps) {
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }}>작성자</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="left">문의 글</TableCell>
                   <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">작성일</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">수정</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
-                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">최종수정일</TableCell>
+                  {/* <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">활성/비활성</TableCell>
+                  <TableCell sx={{ backgroundColor: headerColor, color: headerTxtColor }} align="center">삭제</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {inquirys && inquirys.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((inquiry, index) => (
+                {inquirys.map((inquiry, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{inquiry.sender}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }}>{inquiry.message}</TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">{moment(inquiry.registerTime).format("YY.MM.DD")}</TableCell>
+                    <TableCell sx={{ color: headerTxtColor }} align="center">{moment(inquiry.registerDate).format("YY.MM.DD")}</TableCell>
                
                     <TableCell sx={{ color: headerTxtColor }} align="center">
-                    <IconButton
-                      onClick={() => {}}
-                    ><FaPencilAlt /></IconButton>
+                {moment(inquiry.updateDate).format("YY.MM.DD")}
                     </TableCell>
-                  
-                    <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
-                    >
-                    {inquiry.activated===true?  <GiNightSleep />:
-                    <GiSun
-                    color='#14AC2B'
-                    />}
-                    </IconButton></TableCell>
-                    <TableCell sx={{ color: headerTxtColor }} align="center">
-                      <IconButton
-                        onClick={() => {}}
-                      ><FaTrashAlt /></IconButton>
-                    </TableCell>
+                
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          {inquirys && <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={inquirys.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={()=>{}}
-            onRowsPerPageChange={()=>{}}
-          />}
+          <div className="custom-pagenation-row">
+            <Button
+              variant='outlined'
+              sx={{
+                borderColor: appColor1,
+                color: appColor1,
+                ":hover": {
+                  borderColor: appColor1,
+                  color: appColor1,
+                }
+              }}
+              onClick={onClickPrev}
+            >Prev</Button>
+            {page + 1} Page
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: appColor1,
+                ":hover": {
+                  backgroundColor: appColor1
+                }
+              }}
+              onClick={onClickNext}
+            >Next</Button>
+          </div>
           {/* 수정 다이얼로그 */}
           {/* <Dialog open={false} onClose={()=>{}}>
             <DialogTitle>병원 정보 수정</DialogTitle>

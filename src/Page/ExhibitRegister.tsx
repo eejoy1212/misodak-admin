@@ -5,6 +5,7 @@ import './ExhibitRegister.css'
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { postAddExhibit } from '../api/exhibit';
+import { appColor1 } from '../const/const';
 
 export interface IExhibitRegisterProps {}
 
@@ -245,9 +246,9 @@ formData.forEach((value, key) => {
                                     variant='contained'
                                     sx={{
                                         marginLeft: "30px",
-                                        backgroundColor: "#31873E",
+                                        backgroundColor: appColor1,
                                         ":hover": {
-                                            backgroundColor: "#31873E",
+                                            backgroundColor: appColor1,
                                         }
                                     }}
                                 >귀속</Button>
@@ -304,26 +305,14 @@ formData.forEach((value, key) => {
 
                     {/* 취소 & 이벤트 생성 버튼 */}
                     <div className='btns-row'>
-                        <Button
-                            variant='outlined'
-                            sx={{
-                                width: "160px",
-                                borderColor: "black",
-                                color: "black",
-                                ":hover": {
-                                    width: "160px",
-                                    borderColor: "black",
-                                    color: "black",
-                                }
-                            }}
-                        >취소</Button>
+                 
                         <Button
                             variant='contained'
                             sx={{
-                                backgroundColor: "#31873E",
+                                backgroundColor: appColor1,
                                 width: "160px",
                                 ":hover": {
-                                    backgroundColor: "#31873E",
+                                    backgroundColor: appColor1,
                                     width: "160px",
                                 }
                             }}

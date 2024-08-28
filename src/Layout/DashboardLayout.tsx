@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, Typography } from '@mui/material';
 import { MdDashboard, MdNotificationsNone, MdOutlineEventNote, MdLayers, MdDiamond } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa";
+import { appColor1 } from '../const/const';
 
 export interface DashboardLayoutProps {}
 
@@ -35,20 +36,20 @@ export function DashboardLayout(props: DashboardLayoutProps) {
           </div>
           <Typography fontSize={"18px"} sx={{ color: "#999999", width: "calc(100% - 40px)", marginLeft: "20px", marginRight: "20px", marginTop: "36px", marginBottom: "10px" }}>Menu</Typography>
           <ul className="menus">
-            <li className={`menu ${openTab === null && getSelected("/") ? "select" : ""}`} onClick={handleDashboardClick}>
+            {/* <li className={`menu ${openTab === null && getSelected("/") ? "select" : ""}`} onClick={handleDashboardClick}>
               <div className={`indicator ${openTab === null && getSelected("/") ? "" : "opacity"}`} />
-              <MdDashboard size={"20px"} color={`${openTab === null && getSelected("/") ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${openTab === null && getSelected("/") ? "#14AC2B" : "#999999"}` }}>Dashboard</strong>
-            </li>
+              <MdDashboard size={"20px"} color={`${openTab === null && getSelected("/") ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${openTab === null && getSelected("/") ? appColor1 : "#999999"}` }}>Dashboard</strong>
+            </li> */}
             {/* <li className="menu" >
               <div className={`indicator ${getSelected("/noti") ? "" : "opacity"}`} />
-              <MdNotificationsNone size={"20px"} color={`${getSelected("/noti") ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${getSelected("/noti") ? "#14AC2B" : "#999999"}` }}>Notification</strong>
+              <MdNotificationsNone size={"20px"} color={`${getSelected("/noti") ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${getSelected("/noti") ? appColor1 : "#999999"}` }}>Notification</strong>
             </li> */}
             <li className={`menu ${openTab === "info" ? "select" : ""}`} onClick={() => handleTabClick("info")}>
               <div className={`indicator ${openTab === "info" ? "" : "opacity"}`} />
-              <MdOutlineEventNote size={"20px"} color={`${openTab === "info" ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${openTab === "info" ? "#14AC2B" : "#999999"}` }}>병원관리</strong>
+              <MdOutlineEventNote size={"20px"} color={`${openTab === "info" ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${openTab === "info" ? appColor1 : "#999999"}` }}>병원관리</strong>
             </li>
             {openTab === "info" && (
               <ul>
@@ -58,12 +59,12 @@ export function DashboardLayout(props: DashboardLayoutProps) {
             )}
             <li className={`menu ${openTab === "event" ? "select" : ""}`} onClick={() => handleTabClick("event")}>
               <div className={`indicator ${openTab === "event" ? "" : "opacity"}`} />
-              <MdLayers size={"20px"} color={`${openTab === "event" ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${openTab === "event" ? "#14AC2B" : "#999999"}` }}>이벤트관리</strong>
+              <MdLayers size={"20px"} color={`${openTab === "event" ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${openTab === "event" ? appColor1 : "#999999"}` }}>이벤트관리</strong>
             </li>
             {openTab === "event" && (
               <ul>
-                <li className={`${location.pathname === "/url-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/url-create")}>URL 생성</li>
+                {/* <li className={`${location.pathname === "/url-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/url-create")}>URL 생성</li> */}
                 <li className={`${location.pathname === "/urls" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/urls")}>URL 정보</li>
                 {/* <li className={`${location.pathname === "/exhibit-create" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/exhibit-create")}>기획전 생성</li> */}
                 <li className={`${location.pathname === "/exhibit" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/exhibit")}>기획전 관리</li>
@@ -74,8 +75,8 @@ export function DashboardLayout(props: DashboardLayoutProps) {
             )}
             <li className={`menu ${openTab === "community" ? "select" : ""}`} onClick={() => handleTabClick("community")}>
               <div className={`indicator ${openTab === "community" ? "" : "opacity"}`} />
-              <FaRegUser size={"20px"} color={`${openTab === "community" ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${openTab === "community" ? "#14AC2B" : "#999999"}` }}>커뮤니티관리</strong>
+              <FaRegUser size={"20px"} color={`${openTab === "community" ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${openTab === "community" ? appColor1 : "#999999"}` }}>커뮤니티관리</strong>
             </li>
             {openTab === "community" && (
               <ul>
@@ -87,8 +88,8 @@ export function DashboardLayout(props: DashboardLayoutProps) {
             )}
             <li className={`menu ${openTab === "etc" ? "select" : ""}`} onClick={() => handleTabClick("etc")}>
               <div className={`indicator ${openTab === "etc" ? "" : "opacity"}`} />
-              <MdDiamond size={"20px"} color={`${openTab === "etc" ? "#14AC2B" : "#999999"}`} style={{ marginLeft: "10px" }} />
-              <strong style={{ color: `${openTab === "etc" ? "#14AC2B" : "#999999"}` }}>기타관리</strong>
+              <MdDiamond size={"20px"} color={`${openTab === "etc" ? appColor1 : "#999999"}`} style={{ marginLeft: "10px" }} />
+              <strong style={{ color: `${openTab === "etc" ? appColor1 : "#999999"}` }}>기타관리</strong>
             </li>
             {openTab === "etc" && (
               <ul>

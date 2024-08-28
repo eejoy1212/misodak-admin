@@ -1,5 +1,6 @@
 import { TextField } from '@mui/material';
 import * as React from 'react';
+import { appColor1 } from '../const/const';
 
 export interface IForbidTxtfieldProps {
   placeHolder?:string;
@@ -20,7 +21,7 @@ export function ForbidTxtfield (props: IForbidTxtfieldProps) {
           '& fieldset': {
             height:"50px",
             borderRadius: "30px",
-            borderColor: '#14AC2B',
+            borderColor: appColor1,
           },
           '&:hover fieldset': {
             height:"50px",
@@ -28,7 +29,7 @@ export function ForbidTxtfield (props: IForbidTxtfieldProps) {
           },
           '&.Mui-focused fieldset': {
             height:"50px",
-            borderColor: '#14AC2B',
+            borderColor: appColor1,
           },
         },
       }}

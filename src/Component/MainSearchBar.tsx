@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, TextField, InputAdornment } from '@mui/material';
 import { FaSearch } from 'react-icons/fa';
+import { appColor1 } from '../const/const';
 
 export interface MainSearchBarProps {
   placeholder: string;
@@ -23,7 +24,7 @@ export function MainSearchBar({ placeholder, onSearch,size="medium" }: MainSearc
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <FaSearch color='#14AC2B' />
+              <FaSearch color={appColor1} />
             </InputAdornment>
           ),
         }}
@@ -33,13 +34,13 @@ export function MainSearchBar({ placeholder, onSearch,size="medium" }: MainSearc
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
               borderRadius: "30px",
-              borderColor: '#14AC2B',
+              borderColor: appColor1,
             },
             '&:hover fieldset': {
-              borderColor: 'darkgreen',
+              borderColor: appColor1,
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#14AC2B',
+              borderColor: appColor1,
             },
           },
         }}

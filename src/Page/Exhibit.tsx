@@ -33,7 +33,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
-import { departmentOptions, parseAddress } from '../const/const';
+import { appColor1, appColor2, departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
 import { deleteExhibit, getExhibits, putActivateExhibit, searchGetExhibits } from '../api/exhibit';
 import moment from 'moment';
@@ -111,7 +111,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
 }));
 
 export function Exhibit(props: ExhibitProps) {
-    const headerColor = "#F0FBEB";
+    const headerColor =appColor2;
     const headerTxtColor = "#333333";
     const [exhibits, setExhibits] = useState<Exhibit[]>([]);
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -227,9 +227,9 @@ const handleDelete = async (id: number, exhibitName: string) => {
               variant='contained'
               sx={{
                 width:"200px",
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={()=>{
@@ -242,7 +242,7 @@ const handleDelete = async (id: number, exhibitName: string) => {
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -277,7 +277,7 @@ const handleDelete = async (id: number, exhibitName: string) => {
                     >
                     {exhibit.activated===true?  <GiNightSleep />:
                     <GiSun
-                    color='#14AC2B'
+                    color={appColor1}
                     />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
@@ -297,11 +297,11 @@ const handleDelete = async (id: number, exhibitName: string) => {
             <Button
               variant='outlined'
               sx={{
-                borderColor: "#14AC2B",
-                color: "#14AC2B",
+                borderColor: appColor1,
+                color: appColor1,
                 ":hover": {
-                  borderColor: "#14AC2B",
-                  color: "#14AC2B",
+                  borderColor: appColor1,
+                  color: appColor1,
                 }
               }}
               onClick={onClickPrev}
@@ -310,9 +310,9 @@ const handleDelete = async (id: number, exhibitName: string) => {
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={onClickNext}

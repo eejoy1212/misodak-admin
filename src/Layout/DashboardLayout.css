@@ -56,14 +56,14 @@
 .indicator{
 width: 5px;
 height: 100%;
-background-color:#14AC2B;
+background-color:#ff5050;
 
 }
 .opacity{
     opacity: 0;
 }
 .select{
-    background-color: #DEF6D0;
+    background-color: #F8ECEC;
 }
 .sub-menu{
     cursor: pointer;
@@ -82,7 +82,7 @@ font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    border-left: 1px solid #14AC2B;
+    border-left: 1px solid #ff5050;
     text-indent: 10px;
  font-weight: 600;
     color: black;

@@ -32,7 +32,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
-import { departmentOptions, parseAddress } from '../const/const';
+import { appColor1, appColor2, departmentOptions, parseAddress } from '../const/const';
 
 // 병원 데이터 타입 정의
 interface Hospital {
@@ -108,7 +108,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
 }));
 
 export function Hospital(props: HospitalProps) {
-  const headerColor = "#F0FBEB";
+  const headerColor = appColor2;
   const headerTxtColor = "#333333";
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [page, setPage] = useState(0);
@@ -298,7 +298,7 @@ console.log("병원정보>>>",hospitals)
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -333,7 +333,7 @@ console.log("병원정보>>>",hospitals)
                     >
                     {hospital.activated===true?  <GiNightSleep />:
                     <GiSun
-                    color='#14AC2B'
+                    color={appColor1}
                     />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
@@ -351,11 +351,11 @@ console.log("병원정보>>>",hospitals)
             <Button
               variant='outlined'
               sx={{
-                borderColor: "#14AC2B",
-                color: "#14AC2B",
+                borderColor: appColor1,
+                color: appColor1,
                 ":hover": {
-                  borderColor: "#14AC2B",
-                  color: "#14AC2B",
+                  borderColor: appColor1,
+                  color: appColor1,
                 }
               }}
               onClick={onClickPrev}
@@ -364,9 +364,9 @@ console.log("병원정보>>>",hospitals)
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={onClickNext}

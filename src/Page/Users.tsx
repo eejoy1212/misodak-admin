@@ -29,6 +29,7 @@ import './Users.css';
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { GrClose } from 'react-icons/gr';
+import { appColor1, appColor2 } from '../const/const';
 
 interface User {
   id: number;
@@ -48,7 +49,7 @@ interface UserProps {
 
 }
 export function Users(props: UserProps) {
-  const headerColor = "#F0FBEB";
+  const headerColor = appColor2;
   const headerTxtColor = "#333333";
   const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(0);
@@ -193,7 +194,7 @@ const formattedDateStr = moment(selected.registerTime).set({
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 650 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 650 }}
           >
             <Table 
         //  size='small'
@@ -243,7 +244,7 @@ const formattedDateStr = moment(selected.registerTime).set({
                     >
                       {user.activated === true ? <GiNightSleep /> :
                         <GiSun
-                          color='#14AC2B'
+                          color={appColor1}
                         />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
@@ -263,11 +264,11 @@ const formattedDateStr = moment(selected.registerTime).set({
             <Button
               variant='outlined'
               sx={{
-                borderColor: "#14AC2B",
-                color: "#14AC2B",
+                borderColor: appColor1,
+                color: appColor1,
                 ":hover": {
-                  borderColor: "#14AC2B",
-                  color: "#14AC2B",
+                  borderColor: appColor1,
+                  color: appColor1,
                 }
               }}
               onClick={onClickPrev}
@@ -276,9 +277,9 @@ const formattedDateStr = moment(selected.registerTime).set({
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={onClickNext}
@@ -433,7 +434,7 @@ open={openEdit} onClose={onClose}>
 
             </DialogContent>
             <DialogActions>
-            <Button
+            {/* <Button
                                 variant='outlined'
                                 sx={{
                                     marginLeft:"140px",
@@ -447,14 +448,14 @@ open={openEdit} onClose={onClose}>
                                     }
                                 }}
                                 onClick={onClose}
-                                >취소</Button>
+                                >취소</Button> */}
                                 <Button
                                  variant='contained'
                                  sx={{
-                                    backgroundColor:"#31873E",
+                                    backgroundColor:appColor1,
                                     width:"100px",
                                     ":hover":{
-                                        backgroundColor:"#31873E",
+                                        backgroundColor:appColor1,
                                     width:"100px",  
                                     }
                                  }}

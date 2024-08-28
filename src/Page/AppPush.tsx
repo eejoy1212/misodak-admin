@@ -34,7 +34,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
-import { departmentOptions, parseAddress } from '../const/const';
+import { appColor1, appColor2, departmentOptions, parseAddress } from '../const/const';
 import { getEvents } from '../api/event';
 import { deleteAppPush, getAppPushs, putActivateAppPush, putSendAppPush, searchGetAppPushs } from '../api/apppush';
 import { AppPushCreate } from './AppPushCreate';
@@ -113,7 +113,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
 }));
 
 export function AppPushs(props: UrlsProps) {
-    const headerColor = "#F0FBEB";
+    const headerColor = appColor2;
     const headerTxtColor = "#333333";
     const [urls, setUrls] = useState<AppPush[]>([]);
   const [page, setPage] = useState(0);
@@ -244,9 +244,9 @@ const onSearch = (e: any) => {
               variant='contained'
               sx={{
                 width:"200px",
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={()=>{
@@ -276,7 +276,7 @@ const onSearch = (e: any) => {
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -319,7 +319,7 @@ const onSearch = (e: any) => {
                     >
                     {url.activated===true?  <GiNightSleep />:
                     <GiSun
-                    color='#14AC2B'
+                    color={appColor1}
                     />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
@@ -339,11 +339,11 @@ const onSearch = (e: any) => {
             <Button
               variant='outlined'
               sx={{
-                borderColor: "#14AC2B",
-                color: "#14AC2B",
+                borderColor: appColor1,
+                color: appColor1,
                 ":hover": {
-                  borderColor: "#14AC2B",
-                  color: "#14AC2B",
+                  borderColor: appColor1,
+                  color: appColor1,
                 }
               }}
               onClick={onClickPrev}
@@ -352,9 +352,9 @@ const onSearch = (e: any) => {
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={onClickNext}

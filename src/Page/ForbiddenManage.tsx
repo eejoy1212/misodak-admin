@@ -3,6 +3,7 @@ import './ForbiddenManage.css';
 import { Button, Card, CardContent, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { ForbidTxtfield } from '../Component/ForbidTxtfield';
 import { deleteBanWord, getBanWords, modifyPutBanWord, regPostBanWord } from '../api/hospital';
+import { appColor1 } from '../const/const';
 
 export interface ForbiddenManageProps {}
 export interface WordProps {
@@ -119,9 +120,9 @@ export function ForbiddenManage(props: ForbiddenManageProps) {
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#31873E",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#31873E",
+                  backgroundColor: appColor1,
                 },
               }}
               onClick={onRegWord}
@@ -162,11 +163,11 @@ export function ForbiddenManage(props: ForbiddenManageProps) {
             <Button
               variant='outlined'
               sx={{
-                color: "#31873E",
-                borderColor: "#31873E",
+                color: appColor1,
+                borderColor: appColor1,
                 ":hover": {
-                  color: "#31873E",
-                  borderColor: "#31873E",
+                  color: appColor1,
+                  borderColor: appColor1,
                 },
               }}
               onClick={() => {

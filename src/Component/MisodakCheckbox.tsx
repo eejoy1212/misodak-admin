@@ -1,5 +1,6 @@
 import { Checkbox } from '@mui/material';
 import * as React from 'react';
+import { appColor1 } from '../const/const';
 
 export interface IMisodakCheckboxProps {
 }
@@ -8,9 +9,9 @@ export function MisodakCheckbox (props: IMisodakCheckboxProps) {
   return (
     <Checkbox
     sx={{
-        color: "#14AC2B",
+        color: appColor1,
         '&.Mui-checked': {
-            color: "#14AC2B",
+            color: appColor1,
         },
         height: "28px"
     }}

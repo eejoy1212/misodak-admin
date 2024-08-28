@@ -100,7 +100,8 @@ export const cityRegionData:CityRegionData = {
     }
     return null;
   }
-  
+  export const appColor1="#ff5050"
+  export const appColor2="#F8ECEC"
 //   const onChangeDep = (e: any) => {
 //     const category: string = e.target.value;
 //     if (category === "ALL") {

@@ -17,7 +17,7 @@ import DaumPostcode from 'react-daum-postcode';
 import './HospitalRegister.css';
 import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield';
 import ImgContainer from '../images/img-container.png';
-import { departmentOptions } from '../const/const';
+import { appColor1, departmentOptions } from '../const/const';
 import { postRegisterHospital } from '../api/hospital';
 
 export interface IHospitalRegisterProps {}
@@ -356,7 +356,7 @@ export function HospitalRegister(props: IHospitalRegisterProps) {
                                     sx={{
                                         marginTop: "20px",
                                         width: "160px",
-                                        backgroundColor: "#31873E"
+                                        backgroundColor: appColor1
                                     }}
                                     onClick={handleRegister} // 정보 등록 함수 호출
                                 >

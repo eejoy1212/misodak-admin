@@ -28,6 +28,7 @@ import { HospitalRegisterTxtfield } from '../Component/HospitalRegisterTxtfield'
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { getBoard } from '../api/board';
 import moment from 'moment';
+import { appColor1, appColor2 } from '../const/const';
 
 interface Write {
   id: number;
@@ -48,7 +49,7 @@ interface WriteProps {
 
 }
 export function Board(props: WriteProps) {
-  const headerColor = "#F0FBEB";
+  const headerColor = appColor2;
   const headerTxtColor = "#333333";
   const [writes, setWrites] = useState<Write[]>([]);
   const [page, setPage] = useState(0);
@@ -120,7 +121,7 @@ export function Board(props: WriteProps) {
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 650 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 650 }}
           >
             <Table 
         //  size='small'
@@ -150,8 +151,8 @@ export function Board(props: WriteProps) {
                   <TableRow key={index} 
                   
                   >
-                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.registerDate).format("YYYY-MM-DD")}</TableCell>
-                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.updateDate).format("YYYY-MM-DD")}</TableCell>
+                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.registerDate).format("YY.MM.DD")}</TableCell>
+                    <TableCell   sx={{ color: headerTxtColor  }}>{moment(write.updateDate).format("YY.MM.DD")}</TableCell>
                     <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.writer ?? "-"}</TableCell>
                     <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.content ?? "-"}</TableCell>
                     <TableCell  sx={{ color: headerTxtColor  }} align="left">{write.category ?? "-"}</TableCell>
@@ -195,7 +196,7 @@ export function Board(props: WriteProps) {
                     >
                       {write.activated === true ? <GiNightSleep /> :
                         <GiSun
-                          color='#14AC2B'
+                          color={appColor1}
                         />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
@@ -213,11 +214,11 @@ export function Board(props: WriteProps) {
             <Button
               variant='outlined'
               sx={{
-                borderColor: "#14AC2B",
-                color: "#14AC2B",
+                borderColor: appColor1,
+                color: appColor1,
                 ":hover": {
-                  borderColor: "#14AC2B",
-                  color: "#14AC2B",
+                  borderColor: appColor1,
+                  color: appColor1,
                 }
               }}
               onClick={onClickPrev}
@@ -226,9 +227,9 @@ export function Board(props: WriteProps) {
             <Button
               variant='contained'
               sx={{
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
               onClick={onClickNext}

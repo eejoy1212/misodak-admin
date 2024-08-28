@@ -26,7 +26,7 @@ import {
   Box
 } from '@mui/material';
 import { BiSolidHide } from "react-icons/bi";
-import { GrDocumentCsv } from "react-icons/gr";
+import { GrClose, GrDocumentCsv } from "react-icons/gr";
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
 import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
@@ -34,9 +34,11 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
 import DaumPostcode from 'react-daum-postcode';
-import { departmentOptions, parseAddress } from '../const/const';
-import { downloadCsvGetEvent, getEvents, searchGetEvents } from '../api/event';
+import { appColor1, appColor2, departmentOptions, parseAddress } from '../const/const';
+import { deleteUrl, downloadCsvGetEvent, getEvents, putActivateEvent, putVisibleEvent, searchGetEvents } from '../api/event';
 import moment from 'moment';
+import { UrlRegister } from './UrlRegister';
+import { UrlEdit } from './UrlEdit';
 
 interface Urls {
   id: number;
@@ -105,21 +107,43 @@ const IOSSwitch = styled((props: SwitchProps) => (
 }));
 
 export function Urls(props: UrlsProps) {
-    const headerColor = "#F0FBEB";
+    const headerColor = appColor2;
     const headerTxtColor = "#333333";
     const [urls, setUrls] = useState<Urls[]>([]);
   const [page, setPage] = useState(0);
+  const [openCreate,setOpenCreate]=useState(false)
+  const [openEdit,setOpenEdit]=useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [editing,setEditing]=useState(null)
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  const onOpenCreateDialog=()=>{
+    setOpenCreate(true)
+  }
+  const onCloseCreateDialog=()=>{
+    setOpenCreate(false)
+  }
+  const onOpenEditDialog=(editing:any)=>{
+    setEditing(editing)
+    setOpenEdit(true)
+  }
+  const onCloseEditDialog=()=>{
+    setOpenEdit(false)
+  }
   const fetchUrls = async () => {
-    const res = await getEvents(page);
+    try {
+       const res = await getEvents(page);
     console.log("이벤트 조회>>>",res)
     setUrls(res);
+    return res.length
+    } catch (error) {
+      return 0
+    }
+   
   };
 
   useEffect(() => {
     fetchUrls();
-  }, []);
+  }, [page]);
   const fetchSearchEvents = async (keyword: string) => {
     if (searchTimeout) {
       clearTimeout(searchTimeout);
@@ -174,9 +198,93 @@ export function Urls(props: UrlsProps) {
         console.error('CSV 다운로드 중 오류가 발생했습니다:', error);
       }
     };
-  
+    const handleDelete = async (id: number, name: string) => {
+      const res = window.confirm(`${name}을 삭제 하시겠습니까?`);
+      if (res) {
+        await deleteUrl(id);
+        fetchUrls();
+      }
+    };
+    const handleInActivate = async (id: number, nowActivate: boolean) => {
+      const res = window.confirm(`${nowActivate === true ? "비활성" : "활성"} 하시겠습니까?`);
+      if (res) {
+        await putActivateEvent(id);
+        fetchUrls();
+      }
+    };
+    const handleVisible = async (id: number, name: string) => {
+      const res = window.confirm(`${name}를 숨김 처리 하시겠습니까?`);
+      if (res) {
+        await putVisibleEvent(id);
+        fetchUrls();
+      }
+    };
+    const onClickNext = async () => {
+      const nextPage = page + 1;
+      
+      // 다음 페이지 데이터를 가져와서 확인
+      const res = await getEvents(nextPage);
+      // 다음 페이지 데이터가 없으면 페이지를 증가시키지 않음
+      if (res.length > 0) {
+          setUrls(res);
+          setPage(nextPage);
+      } else {
+          console.log("더 이상 페이지가 없습니다.");
+      }
+  };
+  const onClickPrev = async () => {
+    if (page > 0) {
+      setPage((p) => p - 1);
+    }
+  };
   return (
     <div className="hospital-container">
+      {/* url 생성 다이얼로그 */}
+      <Dialog
+      fullScreen
+      open={openCreate}
+    
+      >
+        <DialogTitle
+        sx={{
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"space-between",
+          height:"30px",
+        }}
+        >
+          <span>URL 생성</span>
+          <IconButton
+          onClick={onCloseCreateDialog}
+          ><GrClose/></IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <UrlRegister/>
+        </DialogContent>
+      </Dialog>
+      {/* url 수정 다이얼로그 */}
+      <Dialog
+      fullScreen
+      open={openEdit}
+    
+      >
+        <DialogTitle
+        sx={{
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"space-between",
+          height:"30px",
+        }}
+        >
+          <span>URL 수정</span>
+          <IconButton
+          onClick={onCloseEditDialog}
+          ><GrClose/></IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <UrlEdit editing={editing}/>
+        </DialogContent>
+      </Dialog>
       <Typography fontSize={"18px"}>이벤트정보 - 조회</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
@@ -194,20 +302,19 @@ export function Urls(props: UrlsProps) {
               variant='contained'
               sx={{height:"36px",
                 width:"200px",
-                backgroundColor: "#14AC2B",
+                backgroundColor: appColor1,
                 ":hover": {
-                  backgroundColor: "#14AC2B"
+                  backgroundColor: appColor1
                 }
               }}
-              onClick={()=>{
-              }}
+              onClick={onOpenCreateDialog}
             >URL 생성</Button> <Button
             variant='contained'
             sx={{height:"36px",
               width:"200px",
-              backgroundColor: "#14AC2B",
+              backgroundColor: appColor1,
               ":hover": {
-                backgroundColor: "#14AC2B"
+                backgroundColor: appColor1
               }
             }}
             onClick={fetchDownloadCsv}
@@ -220,7 +327,7 @@ export function Urls(props: UrlsProps) {
           <TableContainer
             component={Paper}
             variant='outlined'
-            sx={{ borderTop: "1px solid #14AC2B", maxHeight: 600 }}
+            sx={{ borderTop: `1px solid ${appColor1}`, maxHeight: 600 }}
           >
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
@@ -240,7 +347,7 @@ export function Urls(props: UrlsProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {urls && urls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((url, index) => (
+                {urls.map((url, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: headerTxtColor }}>{url.eventName}</TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="left">{`${moment(url.startAt).format("YYYY-MM-DD")} ~ ${moment(url.endAt).format("YYYY-MM-DD")}`}</TableCell>
@@ -255,24 +362,29 @@ export function Urls(props: UrlsProps) {
                     ><GrDocumentCsv /></IconButton>
                     </TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
+                      onClick={()=>{onOpenEditDialog(url)}}
                     ><FaPencilAlt /></IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center"><IconButton
-                      onClick={() => {}}
+                      onClick={() => {
+
+                        handleInActivate(url.id,url.activated)
+                      }}
                     >
                     {url.activated===true?  <GiNightSleep />:
                     <GiSun
-                    color='#14AC2B'
+                    color={appColor1}
                     />}
                     </IconButton></TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          handleVisible(url.id,url.eventName)
+                        }}
                       ><BiSolidHide /></IconButton>
                     </TableCell>
                     <TableCell sx={{ color: headerTxtColor }} align="center">
                       <IconButton
-                        onClick={() => {}}
+                        onClick={() => {handleDelete(url.id,url.eventName)}}
                       ><FaTrashAlt /></IconButton>
                     </TableCell>
                   </TableRow>
@@ -280,15 +392,31 @@ export function Urls(props: UrlsProps) {
               </TableBody>
             </Table>
           </TableContainer>
-          {urls && <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={urls.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={()=>{}}
-            onRowsPerPageChange={()=>{}}
-          />}
+          <div className="custom-pagenation-row">
+            <Button
+              variant='outlined'
+              sx={{
+                borderColor: appColor1,
+                color: appColor1,
+                ":hover": {
+                  borderColor: appColor1,
+                  color: appColor1,
+                }
+              }}
+              onClick={onClickPrev}
+            >Prev</Button>
+            {page + 1} Page
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: appColor1,
+                ":hover": {
+                  backgroundColor: appColor1
+                }
+              }}
+              onClick={onClickNext}
+            >Next</Button>
+          </div>
           {/* 수정 다이얼로그 */}
           {/* <Dialog open={false} onClose={()=>{}}>
             <DialogTitle>병원 정보 수정</DialogTitle>
