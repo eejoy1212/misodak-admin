@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 import './Hospital.css';
 import { MainSearchBar } from '../Component/MainSearchBar';
-import { deleteHospital, getDepHospital, getHospital, putActivateHospital, putEditHospital } from '../api/hospital';
+import { deleteHospital, getDepHospital, getHospital, postRegisterHospital, putActivateHospital, putEditHospital } from '../api/hospital';
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { GiNightSleep, GiSun } from "react-icons/gi";
 import { searchHospitals } from '../api/hospital';
@@ -53,11 +53,17 @@ interface Hospital {
 }
 
 export interface HospitalProps { }
-export interface SwitchProps { }
+interface SwitchProps {
+  checked: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 
 const IOSSwitch = styled((props: SwitchProps) => (
-  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props}
+  checked={props.checked}
+  onChange={props.onChange}
+  />
 ))(({ theme }) => ({
   width: 42,
   height: 26,
@@ -119,7 +125,11 @@ export function Hospital(props: HospitalProps) {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
   const [openPostcode, setOpenPostcode] = useState(false);
-
+  const [openAddDialog,setOpenAddDialog]=useState(false)
+  const [newHospital,setNewHospital]=useState<Hospital | null>(null);
+  const [eventToggle,setEventToggle]=useState<boolean>(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [editImage, setEditImage] = useState<File | null>(null);
   const handleEditClick = (hospital: Hospital) => {
     const matchingDiv = departmentOptions.filter(op => op.label === hospital.dutyDivNam)[0].value;
     const formattedHospital = { ...hospital, dutyDivNam: matchingDiv };
@@ -132,22 +142,75 @@ export function Hospital(props: HospitalProps) {
     setEditingHospital(null);
     fetchHospital();
   };
+  const handleCloseAddDialog = () => {
+    setOpenAddDialog(false);
+    setNewHospital(null)
+    fetchHospital();
+  };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+  const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setEditImage(e.target.files[0]);
+    }
+  };
+
+  const handleAdd = async () => {
+   
+    if (newHospital) {
+       const formData = new FormData();
+        formData.append('image', image as Blob); // 이미지 파일 추가
+    formData.append('dutyName', newHospital.dutyName);
+    formData.append('city', newHospital.city);
+    formData.append('location', newHospital.location);
+    formData.append('dutyAddr', newHospital.dutyAddr);
+    formData.append('dutyDivNam', newHospital.dutyDivNam);
+    formData.append('tags', newHospital.tags);
+    formData.append('rnum', newHospital.rnum);
+    formData.append('dutyInf', newHospital.dutyInf);
+
+    await postRegisterHospital(formData); // postRegisterHospital 함수가 multipart/form-data 형식 지원하도록 수정 필요
+    }
+   
+    handleCloseAddDialog(); // 다이얼로그 닫기
+  };
   const handleSave = async () => {
     if (editingHospital) {
+      const formData = new FormData();
+      formData.append("image",editImage as Blob)
+      formData.append("id", editingHospital.id.toString());
+      formData.append("dutyName", editingHospital.dutyName);
+      formData.append("city", editingHospital.city);
+      formData.append("location", editingHospital.location);
+      formData.append("dutyAddr", editingHospital.dutyAddr);
+      formData.append("dutyDivNam", editingHospital.dutyDivNam);
+      formData.append("tags", editingHospital.tags);
+      formData.append("dutyInf", editingHospital.dutyInf);
       await putEditHospital(
-        editingHospital.id,
-        editingHospital?.dutyName,
-        editingHospital?.city,
-        editingHospital?.location,
-        editingHospital?.dutyAddr,
-        editingHospital.dutyDivNam,
-        editingHospital.tags,
-        editingHospital?.dutyInf
+      formData
       );
     }
     handleCloseDialog();
   };
+  // const handleAdd = async () => {
+  //   if (newHospital) {
+  //     await postRegisterHospital(
+  //       newHospital?.dutyName,
+  //       newHospital?.city,
+  //       newHospital?.location,
+  //       newHospital?.dutyAddr,
+  //       newHospital.dutyDivNam,
+  //       newHospital.tags,
+  //       newHospital?.dutyInf,
+  //       newHospital?.rnum
+  //     );
+  //   }
+  //   handleCloseAddDialog();
+  // };
 
   const handleCompletePostcode = (data: any) => {
     const parsedAddress = parseAddress(data.address);
@@ -180,6 +243,14 @@ export function Hospital(props: HospitalProps) {
 
   const fetchHospital = async () => {
     const res = await getHospital(page);
+    console.log("병원 조회>>>",res)
+    const containEventRes=res.filter((r:any)=>r.events.length>0)
+    const notContainEventRes=res.filter((r:any)=>r.events.length===0)
+    // if (eventToggle) {
+    //     setHospitals(containEventRes);
+    // }else{
+    //     setHospitals(notContainEventRes);
+    // }
     setHospitals(res);
   };
 
@@ -259,13 +330,105 @@ export function Hospital(props: HospitalProps) {
       setPage((p) => p - 1);
     }
   };
-
+  const handleEventToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEventToggle(e.target.checked); // 이벤트 토글 상태 업데이트
+  };
   useEffect(() => {
     fetchHospital();
   }, [page]);
 console.log("병원정보>>>",hospitals)
   return (
     <div className="hospital-container">
+      {/* 병원추가 창 */}
+      <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
+            <DialogTitle>병원 추가</DialogTitle>
+            <DialogContent>
+              <TextField
+                margin="dense"
+                label="병원명"
+                fullWidth
+                value={newHospital?.dutyName || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, dutyName: e.target.value })}
+              />
+              
+              <TextField
+                margin="dense"
+                label="도시"
+                fullWidth
+                value={newHospital?.city || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, city: e.target.value })}
+                onClick={() => setOpenPostcode(true)}
+              />
+              <TextField
+                margin="dense"
+                label="지역"
+                fullWidth
+                value={newHospital?.location || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, location: e.target.value })}
+                onClick={() => setOpenPostcode(true)}
+              />
+              <Select
+                margin="dense"
+                label="진료과"
+                fullWidth
+                value={newHospital?.dutyDivNam || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, dutyDivNam: e.target.value })}
+              >
+                {departmentOptions.slice(1).map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                margin="dense"
+                label="태그"
+                fullWidth
+                value={newHospital?.tags || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, tags: e.target.value })}
+              />
+                 <TextField
+                margin="dense"
+                label="좋아요수"
+                fullWidth
+                value={newHospital?.rnum || ''}
+                onChange={(e) => setNewHospital({ ...newHospital!, rnum: e.target.value })}
+              />
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 1 }}>
+                {(newHospital && newHospital.tags) && newHospital?.tags.split(',').map((tag, index) => (
+                  <Chip
+                    key={index}
+                    label={tag.trim()}
+                    onDelete={() => handleDeleteTag(tag.trim())}
+                    color="primary"
+                  />
+                ))}
+              </Box>
+              <Button variant="contained" component="label">
+          이미지 선택
+          <input type="file" hidden onChange={handleImageChange} />
+        </Button>
+        {image && <p>{image.name}</p>}
+        
+        {/* {openPostcode && (
+          <Dialog open={openPostcode} onClose={() => setOpenPostcode(false)}>
+            <DialogTitle>주소 검색</DialogTitle>
+            <DialogContent>
+              <DaumPostcode onComplete={handleCompletePostcode} />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenPostcode(false)} color="primary">
+                닫기
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )} */}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="primary">취소</Button>
+              <Button onClick={handleAdd} color="primary">저장</Button>
+            </DialogActions>
+          </Dialog>
       <Typography fontSize={"18px"}>병원정보 - 조회</Typography>
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent
@@ -276,7 +439,22 @@ console.log("병원정보>>>",hospitals)
             paddingBottom: "0px",
           }}
         >
-          <MainSearchBar placeholder='병원명,도시,지역' onSearch={handleSearch} />
+             <div className="exhibit-search-row">  <MainSearchBar placeholder='병원명,도시,지역' onSearch={handleSearch} />
+             <Button
+              variant='contained'
+              sx={{
+                width:"200px",
+                backgroundColor: appColor1,
+                ":hover": {
+                  backgroundColor: appColor1
+                }
+              }}
+              onClick={()=>{
+                setOpenAddDialog(true)
+              }}
+            >병원 추가</Button>
+             </div>
+        
           <div className="filter-row">
             <Typography fontSize={"16px"}>진료과</Typography>
             <Select
@@ -291,8 +469,8 @@ console.log("병원정보>>>",hospitals)
                 </MenuItem>
               ))}
             </Select>
-            <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
-            <IOSSwitch />
+            {/* <Typography fontSize={"16px"}>이벤트 히스토리</Typography>
+            <IOSSwitch checked={eventToggle} onChange={handleEventToggleChange} /> */}
           </div>
 
           <TableContainer
@@ -421,6 +599,11 @@ console.log("병원정보>>>",hospitals)
                   />
                 ))}
               </Box>
+              <Button variant="contained" component="label">
+          이미지 선택
+          <input type="file" hidden onChange={handleEditImageChange} />
+        </Button>
+        {editImage && <p>{editImage.name}</p>}
               {openPostcode && (
                 <Dialog open={openPostcode} onClose={() => setOpenPostcode(false)}>
                   <DialogTitle>주소 검색</DialogTitle>

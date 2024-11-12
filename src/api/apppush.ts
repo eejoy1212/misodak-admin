@@ -15,6 +15,7 @@ export const postCreateAppPushs = async (body:any) => {
 };
   // 앱푸시 완료 / 발송 put
   export const putSendAppPush = async (id:any) => {
+    console.log("push send id>>>",id)
     const { data } = await axiosInstance.post(`/v1/admin/app-push/send/${id}`);
     return data;
   };

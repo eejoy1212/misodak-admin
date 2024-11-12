@@ -33,18 +33,11 @@ export const putVisibleEvent = async (id:number) => {
   return response;
 };
 // 이벤트 생성
-export const postCreateEvent = async (content: { data: any, image: File | null }) => {
+export const postCreateEvent = async (formData:FormData) => {
   try {
-    const formData = new FormData();
     
-    // JSON 데이터를 문자열로 변환 후 FormData에 추가
-    formData.append('data', JSON.stringify(content.data));
-    console.log("data in axios>>>",content.data)
-    // 이미지를 FormData에 추가
-    if (content.image) {
-      formData.append('image', content.image);
-    }
-
+ 
+console.log("이벤트 post event>>>",formData)
     // FormData를 이용해 multipart/form-data로 전송
     const { data } = await axiosInstance.post('/v1/admin/event', formData, {
       headers: {

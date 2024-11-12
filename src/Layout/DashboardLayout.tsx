@@ -54,7 +54,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
             {openTab === "info" && (
               <ul>
                 <li className={`${location.pathname === "/hospital" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/hospital")}>정보 조회</li>
-                <li className={`${location.pathname === "/hospital-register" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/hospital-register")}>정보 등록</li>
+                {/* <li className={`${location.pathname === "/hospital-register" ? "select-sub-menu" : "sub-menu"}`} onClick={() => navigate("/hospital-register")}>정보 등록</li> */}
               </ul>
             )}
             <li className={`menu ${openTab === "event" ? "select" : ""}`} onClick={() => handleTabClick("event")}>

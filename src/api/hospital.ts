@@ -42,50 +42,152 @@ export const putActivateHospital = async (id: number) => {
   return data;
 };
 // 병원을 수정하는 함수
-export const putEditHospital = async (id: number,dutyName:string,city:string,location:string,dutyAddr:string,dutyDivNam:string,tags:string,dutyInf:string) => {
-  console.log("putEditHospital",
-    id,
-    dutyName,
-    city,
-    location,
-    dutyAddr,
-    dutyDivNam,
-    tags,
-    dutyInf)
-  const { data } = await axiosInstance.put(`/v1/admin/hospital`,{
-    id,
-    dutyName,
-    city,
-    location,
-    dutyAddr,
-    dutyDivNam,
-    tags,
-    dutyInf:""
-  });
+// export const putEditHospital = async (id: number,dutyName:string,city:string,location:string,dutyAddr:string,dutyDivNam:string,tags:string,dutyInf:string) => {
+//   console.log("putEditHospital",
+//     id,
+//     dutyName,
+//     city,
+//     location,
+//     dutyAddr,
+//     dutyDivNam,
+//     tags,
+//     dutyInf)
+//   const { data } = await axiosInstance.put(`/v1/admin/hospital`,{
+    
+//     id,
+//     dutyName,
+//     city,
+//     location,
+//     dutyAddr,
+//     dutyDivNam,
+//     tags,
+//     dutyInf:""
+//   });
   
-  return data;
+//   return data;
+// };
+// export const putEditHospital = async (id: number, dutyName: string, city: string, location: string, dutyAddr: string, dutyDivNam: string, tags: string, dutyInf: string) => {
+//   console.log("putEditHospital in api", id, dutyName, city, location, dutyAddr, dutyDivNam, tags, dutyInf);
+  
+//   const { data } = await axiosInstance.put(`/v1/admin/hospital`, {
+//     // image: "", // 이미지 필드가 필요하다면 추가
+//     // request: {
+//     //   id,
+//     //   dutyName,
+//     //   city:city??"",
+//     //   location:location??"",
+//     //   dutyAddr,
+//     //   dutyDivNam:"요양병원",
+//     //   registerDate:"2024-04-22T19:33:42.60866",
+//     //   activated:false,
+//     //   tags,
+//     //   dutyInf,
+      
+//     // }
+    
+//       image: "string",
+//       request: {
+//         id: id,
+//         dutyName: "성모",
+//         city: "string",
+//         location: "string",
+//         dutyAddr: "string",
+//         dutyDivNam: "PLASTIC",
+//         tags: "string",
+//         dutyInf: "string"
+//       }
+    
+//   });
+  
+//   return data;
+// };
+// export const putEditHospital = async (
+//   id: number,
+//   dutyName: string,
+//   city: string,
+//   location: string,
+//   dutyAddr: string,
+//   dutyDivNam: string,
+//   tags: string,
+//   dutyInf: string
+// ) => {
+//   console.log("putEditHospital", id, dutyName, city, location, dutyAddr, dutyDivNam, tags, dutyInf);
+
+//   const formData = new FormData();
+//   formData.append("image", ""); // 이미지 파일이 있다면 파일 객체를 넣어주세요.
+//   formData.append("request", JSON.stringify({
+//     id,
+//     dutyName,
+//     city,
+//     location,
+//     dutyAddr,
+//     dutyDivNam,
+//     tags,
+//     dutyInf
+//   }));
+
+//   const { data } = await axiosInstance.put(`/v1/admin/hospital`, formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data"
+//     }
+//   });
+
+//   return data;
+// };
+//병원 수정 함수
+export const putEditHospital = async (formData: FormData) => {
+  try {
+    const { data } = await axiosInstance.put(`/v1/admin/hospital`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Error updating hospital:", error);
+    throw error;
+  }
 };
+
 // 병원을 등록하는 함수
-export const postRegisterHospital = async (dutyName:string, city:string, location:string, dutyAddr:string, dutyDivNam:string, tags:string, dutyInf:string, rnum:string) => {
-  console.log("register", dutyName, city, location, dutyAddr, dutyDivNam, tags, dutyInf);
+// export const postRegisterHospital = async (dutyName:string, city:string, location:string, dutyAddr:string, dutyDivNam:string, tags:string, dutyInf:string, rnum:string) => {
+//   console.log("register", dutyName, city, location, dutyAddr, dutyDivNam, tags, dutyInf);
+
+//   try {
+//     const { data } = await axiosInstance.post('/v1/admin/hospital', {
+//       dutyName,
+//       city,
+//       location,
+//       dutyAddr,
+//       dutyDivNam,
+//       tags,
+//       dutyInf,
+//       rnum,
+//     });
+//     return data;
+//   } catch (error) {
+//     console.error("Error registering hospital:", error);
+//     throw error;
+//   }
+// };
+export const postRegisterHospital = async (formData: FormData) => {
 
   try {
-    const { data } = await axiosInstance.post('/v1/admin/hospital', {
-      dutyName,
-      city,
-      location,
-      dutyAddr,
-      dutyDivNam,
-      tags,
-      dutyInf,
-      rnum,
+    console.log("추가 formData",formData.getAll("image"))
+    const { data } = await axiosInstance.post('/v1/admin/hospital', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
+
     return data;
   } catch (error) {
     console.error("Error registering hospital:", error);
     throw error;
   }
 };
+
 // 병원을 삭제하는 함수
 export const deleteHospital = async (id: number) => {
   console.log("Delete 병원>>>",id)

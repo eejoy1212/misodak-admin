@@ -90,7 +90,7 @@ export function HospitalRegister(props: IHospitalRegisterProps) {
          console.log(infos); 
           const res=window.confirm(`${dutyName}을(를) 등록하시겠습니까?`)
      if (res) {
-        await postRegisterHospital(infos.dutyName,infos.city,infos.location,infos.dutyAddr,infos.dutyDivNam,infos.tags,infos.dutyInf,infos.rnum)
+        // await postRegisterHospital(infos.dutyName,infos.city,infos.location,infos.dutyAddr,infos.dutyDivNam,infos.tags,infos.dutyInf,infos.rnum)
         window.location.reload()
      }
     };
